@@ -1,1 +1,41 @@
 package core
+
+import (
+	"AfterEnd/config"
+	"AfterEnd/global"
+	"fmt"
+	"gopkg.in/yaml.v2"
+	"io/ioutil"
+	"log"
+	"os"
+)
+
+const ConfigFile = "config.yaml"
+
+func InitConfig() *config.Config {
+	// 使用ioutil导入配置文件，使用yaml.Unmarshal将配置文件反序列化读取到结构体中
+	config := &config.Config{}
+	yamlConf, err := ioutil.ReadFile(ConfigFile)
+	if err != nil {
+		panic(fmt.Errorf("get yamlConf file error: %v", err))
+	}
+	err = yaml.Unmarshal(yamlConf, config)
+	if err != nil {
+		log.Fatalf("config Init Unmarshal: %v", err) // log.Fatalf()用于记录一条严重的错误消息，并且终止程序运行
+	}
+	//fmt.Println("config yamlFile Init success.") // 输出语句，仅作调试使用
+	return config
+}
+
+func SetYaml() error {
+
+	// 将结构体编码为yaml格式
+	siteInfoYaml, err := yaml.Marshal(&global.Config)
+	if err != nil {
+		return err
+	}
+
+	// 将yaml内容写入文件
+	err = ioutil.WriteFile(ConfigFile, siteInfoYaml, os.FileMode(0644))
+	return err
+}
