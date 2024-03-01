@@ -14,5 +14,6 @@ func main() {
 	// 连接mysql数据库，并将数据库写入全局变量
 	global.Db = core.InitGorm()
 
-	flag.AutoMigration()
+	// 捕获命令行参数，并对不同命令行参数的值来执行不同的操作
+	flag.Parse()
 }

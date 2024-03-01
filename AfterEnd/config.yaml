@@ -3,7 +3,7 @@ mysql:
   port: 3306
   db: cinema_admin
   user: root
-  password:
+  password: 200301312934aA
   log_level: debug
   config: "charset=utf8&parseTime=True&loc=Local"
 system:
