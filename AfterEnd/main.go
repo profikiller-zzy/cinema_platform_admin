@@ -2,6 +2,7 @@ package main
 
 import (
 	"AfterEnd/core"
+	"AfterEnd/flag"
 	"AfterEnd/global"
 )
 
@@ -12,4 +13,6 @@ func main() {
 	global.Log = core.InitLogger()
 	// 连接mysql数据库，并将数据库写入全局变量
 	global.Db = core.InitGorm()
+
+	flag.AutoMigration()
 }
