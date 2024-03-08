@@ -21,7 +21,7 @@ func InitRouter() *gin.Engine {
 	router.StaticFS("uploads", http.Dir("uploads"))
 
 	// 该路由组是管理员的路由组
-	adminRouter := router.Group("/admin_api/")
+	adminRouter := router.Group("/user_api/")
 
 	AdminGroupApp := AdminGroup{
 		RouterGroup: apiRouter,
