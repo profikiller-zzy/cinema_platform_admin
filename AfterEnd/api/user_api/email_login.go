@@ -42,9 +42,9 @@ func (UserApi) EmailLoginView(c *gin.Context) {
 
 	// 验证成功，生成Token
 	tokenString, err := jwts.GenerateToken(jwts.JwtPayLoad{
-		UserID: userModel.ID,
-		//UserName
-		Role: int(userModel.UserType),
+		UserID:   userModel.ID,
+		UserName: userModel.UserName,
+		Role:     int(userModel.UserType),
 	})
 	if err != nil {
 		global.Log.Warnln(err.Error())

@@ -6,7 +6,7 @@ import (
 	"net/http"
 )
 
-type AdminGroup struct {
+type RGroup struct {
 	*gin.RouterGroup
 }
 
@@ -21,11 +21,12 @@ func InitRouter() *gin.Engine {
 	router.StaticFS("uploads", http.Dir("uploads"))
 
 	// 该路由组是管理员的路由组
-	adminRouter := router.Group("/user_api/")
+	apiRouter := router.Group("/api/")
 
-	AdminGroupApp := AdminGroup{
+	apiGroupApp := RGroup{
 		RouterGroup: apiRouter,
 	}
+	apiGroupApp.UserRouter()
 
 	return router
 }

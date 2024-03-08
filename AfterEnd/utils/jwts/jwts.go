@@ -34,7 +34,8 @@ func GenerateToken(payLoad JwtPayLoad) (string, error) {
 
 // VerifyToken 解析和验证token
 func VerifyToken(tokenString string) (*CustomClaims, error) {
-	JwtSecretKey = []byte(global.Config.Jwt.SecretKey)
+	//JwtSecretKey = []byte(global.Config.Jwt.SecretKey)
+	JwtSecretKey = []byte("1hwrmabS45PaYmDb")
 	token, err := jwt.ParseWithClaims(tokenString, &CustomClaims{}, func(token *jwt.Token) (interface{}, error) {
 		return JwtSecretKey, nil
 	})
