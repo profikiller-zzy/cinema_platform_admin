@@ -5,4 +5,5 @@ type Config struct {
 	System System `yaml:"system"` // 系统配置信息
 	Logger Logger `yaml:"logger"` // 日志配置信息
 	Jwt    Jwt    `yaml:"jwt"`    // jwt配置信息
+	Redis  Redis  `yaml:"redis"`  // redis配置信息
 }

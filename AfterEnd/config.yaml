@@ -20,3 +20,8 @@ jwt:
   secret_key: 1hwrmabS45PaYmDb
   expire_time: 2
   issuer: profikiller
+redis:
+  ip: -
+  port: 6379
+  password: -
+  poolSize: 100
