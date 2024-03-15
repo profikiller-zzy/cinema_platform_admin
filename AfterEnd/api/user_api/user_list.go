@@ -11,7 +11,12 @@ import (
 )
 
 type UserResponse struct {
-	model.User
+	model.MODEL
+	UserName string     `gorm:"size:64" json:"user_name"` // 用户名，唯一
+	Age      string     `gorm:"size 4" json:"age"`        // 年龄
+	Tel      string     `gorm:"size:18" json:"tel"`       // 电话号码
+	Email    string     `gorm:"size:128" json:"email"`    // 邮箱，用户可以通过邮箱登录
+	UserType ctype.Role `gorm:"size:16" json:"user_type"` // 用户类别，用于区分普通用户、影院用户、平台管理员(属于自定义类型，后期需要添加)，3为普通用户，2为电影院用户，1为平台管理员
 }
 
 type UserListRequest struct {
@@ -47,7 +52,12 @@ func (UserApi) UserListView(c *gin.Context) {
 		user.Tel = desen.DesensitizationTel(user.Tel)
 		user.Email = desen.DesensitizationEmail(user.Email)
 		userRepList = append(userRepList, UserResponse{
-			User: user,
+			MODEL:    user.MODEL,
+			UserName: user.UserName,
+			Age:      user.Age,
+			Tel:      user.Tel,
+			Email:    user.Email,
+			UserType: user.UserType,
 		})
 	}
 	response.OKWithPagingData(userRepList, count, c)
