@@ -12,11 +12,10 @@ import (
 type UserCreateRequest struct {
 	UserName string     `json:"user_name" binding:"required" msg:"请输入用户名"` // 用户名
 	Password string     `json:"password" binding:"required" msg:"请输入密码"`   // 密码
-	Role     ctype.Role `json:"role" binding:"required" msg:"请选择权限"`       // 权限  1 管理员  2 普通用户  3 游客
+	Role     ctype.Role `json:"role" binding:"required" msg:"请选择权限"`       // 权限  1 管理员  2 影院用户  3 普通用户
 }
 
 func (UserApi) UserCreateView(c *gin.Context) {
-	// TODO 后续需要对该函数进行逻辑调整，因为登录之后对某人发消息，即本人是发送人
 	var ucReq UserCreateRequest
 	if err := c.ShouldBindJSON(&ucReq); err != nil {
 		response.FailBecauseOfParamError(err, &ucReq, c)

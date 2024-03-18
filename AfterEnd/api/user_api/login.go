@@ -15,6 +15,7 @@ type EmailLoginRequest struct {
 	Password string `json:"password" binding:"required" msg:"请输入密码"`   // 密码
 }
 
+// EmailLoginView 可以通过邮箱或者用户名登录系统
 func (UserApi) EmailLoginView(c *gin.Context) {
 	var ELReq EmailLoginRequest
 	err := c.ShouldBindJSON(&ELReq)

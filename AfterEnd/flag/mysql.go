@@ -31,7 +31,8 @@ func AutoMigration() {
 			&model.Order{},
 			&model.Hall{},
 			&model.Screening{},
-			&model.MovieActorPerform{})
+			&model.MovieActorPerform{},
+			&model.CinemaApproval{})
 	if err != nil {
 		global.Log.Error(err.Error())
 		return

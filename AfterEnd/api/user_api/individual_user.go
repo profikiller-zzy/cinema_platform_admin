@@ -12,7 +12,7 @@ type ID struct {
 	ID uint `form:"id"` // 单个用户的id
 }
 
-// IndividualUserView 为管理员返回单个用户的信息
+// IndividualUserView 输入用户id，为管理员返回单个用户的信息
 func (UserApi) IndividualUserView(c *gin.Context) {
 	var id ID
 	err := c.ShouldBindQuery(&id)
