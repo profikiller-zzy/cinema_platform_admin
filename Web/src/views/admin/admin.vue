@@ -1,16 +1,16 @@
 <template>
   <div class="admin">
     <aside>
-      <div>
-        <i class="iconfont icon-yonghu"></i>
-      </div>
     </aside>
 
     <div class="admin_main">
       <header></header>
 
       <div class="tabs"></div>
-
+        <div>
+          <i class="iconfont icon-yonghu"></i>
+          <i class="fa fa-camera-retro fa-lg"></i>
+        </div>
       <main>
         <div class="router-view">
           <router-view/>
