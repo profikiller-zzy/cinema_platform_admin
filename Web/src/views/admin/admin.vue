@@ -27,15 +27,15 @@
                   <i class="fa-angle-down"></i>
                 </a>
                 <template #overlay>
-                  <a-menu>
-                    <a-menu-item>
-                      <a href="javascript:;">1st menu item</a>
+                  <a-menu @click="onClick">
+                    <a-menu-item key="user">
+                      <a href="javascript:;">用户管理</a>
                     </a-menu-item>
-                    <a-menu-item>
-                      <a href="javascript:;">2nd menu item</a>
+                    <a-menu-item key="approval">
+                      <a href="javascript:;">审批管理</a>
                     </a-menu-item>
-                    <a-menu-item>
-                      <a href="javascript:;">3rd menu item</a>
+                    <a-menu-item key="movie">
+                      <a href="javascript:;">电影管理</a>
                     </a-menu-item>
                   </a-menu>
                 </template>
@@ -60,6 +60,20 @@
 </template>
 
 <script setup>
+import {useRouter} from "vue-router";
+
+const route = useRouter()
+
+function onClick({key}) {
+  if (key === "user"){
+    router.push({
+      name:"login"
+    })
+  }
+  else if (key === "approval") {
+    console.log("approval")
+  }
+}
 </script>
 
 <style lang="scss">
