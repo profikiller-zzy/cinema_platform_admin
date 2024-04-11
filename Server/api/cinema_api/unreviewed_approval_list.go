@@ -38,7 +38,7 @@ func (CinemaApi) UnreviewedApprovalListView(c *gin.Context) {
 	global.Db.Model(model.CinemaApproval{}).Where("state = ?", "审核中").Count(&count)
 
 	// 对未审批的影院资料进行查询和分页
-	err = global.Db.Where("state = ?", "审核中").Offset(offset).Limit(pageModel.PageSize).Find(&ApprovalList).Error
+	err = global.Db.Where("state = ?", "审核中").Offset(offset).Limit(pageModel.PageSize).Order("create_at asc").Find(&ApprovalList).Error
 	if err != nil {
 		response.FailWithMessage(fmt.Sprintf("error: %s", err.Error()), c)
 		return

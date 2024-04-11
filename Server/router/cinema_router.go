@@ -8,4 +8,5 @@ import (
 func (r RGroup) CinemaRouter() {
 	cinemaApiApp := api.ApiGroupApp.CinemaApi
 	r.GET("/unreviewed_approval_list/", middleware.JwtAuth(1), cinemaApiApp.UnreviewedApprovalListView)
+	r.GET("/individual_approval/", middleware.JwtAuth(1), cinemaApiApp.IndividualApprovalView)
 }
