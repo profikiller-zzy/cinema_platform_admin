@@ -2,7 +2,7 @@
 
   <div class="admin_info">
     <div class="avatar">
-      <img src="@/assets/img.png" alt="">
+      <img src="@/assets/img.png" v-if="props.isAvatar">
     </div>
     <div class="drop_menu">
       <a-dropdown>
@@ -32,6 +32,12 @@
 import {useRouter} from "vue-router";
 
 const router = useRouter()
+const props = defineProps({
+  isAvatar:{
+    type:Boolean,
+    default:false
+  }
+})
 function onClick({key}) {
   if (key === "user"){
     router.push({
