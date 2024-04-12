@@ -23,14 +23,11 @@
       </header>
 
       <div class="tabs">
-        <i class="iconfont icon-yonghu"></i>
-        <i class="fa fa-camera-retro fa-lg"></i>
+
       </div>
 
       <main>
-        <div class="router-view">
-          <router-view/>
-        </div>
+        <router-view></router-view>
       </main>
     </div>
   </div>

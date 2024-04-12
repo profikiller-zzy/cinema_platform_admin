@@ -3,24 +3,25 @@
     v-model:selectedKeys="selectedKeys"
     style="width: 256px"
     mode="inline"
+    @click="goto"
   >
     <!-- 使用v-for循环渲染menuList中的数据 -->
-    <template v-for="menu in data.menuList" :key="menu.id">
+    <template v-for="menu in data.menuList" :key="menu.name">
       <!-- 判断是否为子菜单 -->
-      <a-sub-menu v-if="menu.children && menu.children.length > 0" :key="menu.id">
+      <a-sub-menu v-if="menu.children && menu.children.length > 0" :key="menu.name">
         <!-- 渲染子菜单的图标和标题 -->
         <template #title>
           <i :class="menu.icon"></i>
           <span>{{ menu.title }}</span>
         </template>
         <!-- 循环渲染子菜单中的菜单项 -->
-        <a-menu-item v-for="child in menu.children" :key="child.id">
+        <a-menu-item v-for="child in menu.children" :key="child.name">
           <template #icon><i :class="child.icon"></i></template>
           <span>{{ child.title }}</span>
         </a-menu-item>
       </a-sub-menu>
       <!-- 如果不是子菜单，则直接渲染菜单项 -->
-      <a-menu-item :key="menu.id" v-else>
+      <a-menu-item :key="menu.name" v-else>
         <template #icon><i :class="menu.icon"></i></template>
         <span>{{ menu.title }}</span>
       </a-menu-item>
@@ -31,7 +32,11 @@
 <script setup>
 
 import "@/assets/css/iconfont.css"
-import {reactive} from "vue";
+import {reactive, ref} from "vue";
+import {useRouter} from "vue-router";
+
+const router = useRouter()
+const selectedKeys = ref(['1'])
 const data = reactive({
   menuList:[
     {
@@ -69,6 +74,13 @@ const data = reactive({
     },
   ]
 })
+
+function goto(event) {
+  router.push({
+    name: event.key
+  })
+  console.log(event)
+}
 
 </script>
 
