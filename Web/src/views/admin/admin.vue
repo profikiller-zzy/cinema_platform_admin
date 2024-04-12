@@ -27,7 +27,9 @@
       </div>
 
       <main>
-        <router-view></router-view>
+        <div class="router-view">
+          <router-view></router-view>
+        </div>
       </main>
     </div>
   </div>
@@ -127,7 +129,7 @@ function onClick({key}) {
         padding: 20px;
 
         .router-view {
-          background-color: white;
+          background-color: #e8f5ff;
         }
       }
 
