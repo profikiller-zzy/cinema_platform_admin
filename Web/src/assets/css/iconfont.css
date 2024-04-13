@@ -1,8 +1,8 @@
 @font-face {
   font-family: "iconfont"; /* Project id 4503957 */
-  src: url('//at.alicdn.com/t/c/font_4503957_ezbfmic7mo7.woff2?t=1712893478666') format('woff2'),
-       url('//at.alicdn.com/t/c/font_4503957_ezbfmic7mo7.woff?t=1712893478666') format('woff'),
-       url('//at.alicdn.com/t/c/font_4503957_ezbfmic7mo7.ttf?t=1712893478666') format('truetype');
+  src: url('//at.alicdn.com/t/c/font_4503957_ogdogpsv6j.woff2?t=1712993507089') format('woff2'),
+       url('//at.alicdn.com/t/c/font_4503957_ogdogpsv6j.woff?t=1712993507089') format('woff'),
+       url('//at.alicdn.com/t/c/font_4503957_ogdogpsv6j.ttf?t=1712993507089') format('truetype');
 }
 
 .iconfont {
@@ -11,6 +11,26 @@
   font-style: normal;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+.icon-changci-:before {
+  content: "\e65b";
+}
+
+.icon-pingluntongji:before {
+  content: "\e684";
+}
+
+.icon-shoupiao:before {
+  content: "\f1dc";
+}
+
+.icon-xiaoshoue:before {
+  content: "\e607";
+}
+
+.icon-yonghutongji:before {
+  content: "\e620";
 }
 
 .icon-tianjiayonghu:before {
