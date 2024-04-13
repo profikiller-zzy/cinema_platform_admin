@@ -129,7 +129,7 @@ function onClick({key}) {
         padding: 20px;
 
         .router_view {
-          background-color: #e8f5ff;
+          background-color: white;
         }
       }
 

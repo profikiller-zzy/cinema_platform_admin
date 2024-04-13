@@ -42,7 +42,7 @@ export default defineComponent({
       }
 
       &::after {
-        content: "logo图片";
+        content: "";
         display: flex;
         justify-content: center;
         align-content: center;
