@@ -12,13 +12,18 @@
     </div>
     <!-- actions 主要是一些定义行为的按钮 -->
     <div class="actions">
-      <a-button type="primary">Primary Button</a-button>
-      <a-button>Default Button</a-button>
+      <a-button type="primary">添加用户</a-button>
+      <a-button type="danger" @click="userDelete" v-if="data.selectedRowKeys.length">删除用户</a-button>
     </div>
     <!-- tables 用于展示用户数据的列表 -->
     <div class="tables">
-      <a-table :columns="data.columns" :data-source="data.list" :pagination="false">
-      </a-table>
+      <a-table
+          :columns="data.columns"
+          :data-source="data.list"
+          :pagination="false"
+          :row-selection="{ selectedRowKeys: data.selectedRowKeys, onChange: onSelectChange}"
+          rowKey="id"
+      />
     </div>
     <!-- pages 用于展示分页 -->
     <div class="pages">
@@ -44,42 +49,36 @@ const page = reactive({
 
 const data = reactive({
   columns:[
-    {
-      title: '用户名',
-      dataIndex: 'userName',
-      key: 'userName',
-    },
-    {
-      title: '年龄',
-      dataIndex: 'age',
-      key: 'age',
-    },
-    {
-      title: '电话号码',
-      dataIndex: 'tel',
-      key: 'tel',
-    },
-    {
-      title: '邮箱',
-      dataIndex: 'email',
-      key: 'email',
-    },
-    {
-      title: '用户类型',
-      dataIndex: 'userType',
-      key: 'userType',
-    }
+    {title: '用户ID', dataIndex: 'id', key: 'id',},
+    {title: '用户名', dataIndex: 'user_name', key: 'user_name',},
+    {title: '年龄', dataIndex: 'age', key: 'age',},
+    {title: '电话号码', dataIndex: 'tel', key: 'tel',},
+    {title: '邮箱', dataIndex: 'email', key: 'email',},
+    {title: '用户类型', dataIndex: 'user_type', key: 'user_type',},
+    {title: '注册时间', dataIndex: 'created_at', key: 'created_at',},
   ],
   list:[
     {
-      userName:"pro",
-      age: "20",
-      tel: "12344445555",
-      email: "34445555666@eml.com",
-      userType: "影院用户"
+      id: 22,
+      created_at: "2024-03-15T21:30:51+08:00",
+      updated_at: "2024-03-15T21:30:51+08:00",
+      user_name: "profikiller_admin",
+      age: "18",
+      tel: "136****0045",
+      email: "e****@gmail.com",
+      user_type: "管理员"
     }
-  ]
+  ],
+  selectedRowKeys: [],
 })
+
+function onSelectChange(selectedKeys) {
+  data.selectedRowKeys = selectedKeys
+}
+
+function userDelete(selectedKeys) {
+  console.log(data.selectedRowKeys)
+}
 </script>
 
 <style lang="scss">

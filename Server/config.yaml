@@ -25,3 +25,11 @@ redis:
   port: 6379
   password:
   poolSize: 100
+qi_niu:
+  enable: true
+  access_key: 1HlGSQlD_2sLtyRB9BlOTv7VibTfA48mXQ6zer8D
+  secret_key: nz5nqqZjtHFtgCc8eQ6wLZurnEutTrB_7src69jl
+  bucket: cinema-admin
+  cdn: sbxaiblxv.hn-bkt.clouddn.com
+  zone: z2
+  size: 5

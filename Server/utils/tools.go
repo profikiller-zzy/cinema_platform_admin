@@ -1,6 +1,8 @@
 package utils
 
 import (
+	"crypto/md5"
+	"fmt"
 	"github.com/go-playground/validator/v10"
 	"reflect"
 )
@@ -23,4 +25,19 @@ func GetMsgLabel(err error, obj interface{}) string {
 		}
 	}
 	return err.Error()
+}
+
+// IsInStringList 判断输入的字符串是否在输入的字符串切片中
+func IsInStringList(str string, strList []string) bool {
+	for _, suffix := range strList {
+		if str == suffix {
+			return true
+		}
+	}
+	return false
+}
+
+// MD5 将输入源文件进行MD5 hash，返回以16进制表示的128位hash值
+func MD5(src []byte) string {
+	return fmt.Sprintf("%x", md5.Sum(src))
 }
