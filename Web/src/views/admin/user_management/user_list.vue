@@ -22,8 +22,20 @@
           :data-source="data.list"
           :pagination="false"
           :row-selection="{ selectedRowKeys: data.selectedRowKeys, onChange: onSelectChange}"
-          rowKey="id"
-      />
+          rowKey="id">
+        <template #bodyCell="{ column, record }">
+          <template v-if="column.key === 'avatar_url'">
+            <img class="user_avatar" :src="record.avatar_url">
+          </template>
+          <template v-if="column.key === 'created_at'">
+            <span>{{ dateTransition(record.created_at) }}</span>
+          </template>
+          <template v-if="column.key === 'action'">
+            <a-button class="user_action update" type="primary">编辑</a-button>
+            <a-button class="user_action delete" type="danger">删除</a-button>
+          </template>
+        </template>
+      </a-table>
     </div>
     <!-- pages 用于展示分页 -->
     <div class="pages">
@@ -40,6 +52,8 @@
 
 <script setup>
 import {reactive} from "vue";
+import {dateTransition} from "../../../../utils/dateTransition.js";
+console.log(import.meta.env)
 
 const page = reactive({
   pageNum: 1,
@@ -51,11 +65,13 @@ const data = reactive({
   columns:[
     {title: '用户ID', dataIndex: 'id', key: 'id',},
     {title: '用户名', dataIndex: 'user_name', key: 'user_name',},
+    {title: '头像', dataIndex: 'avatar_url', key: 'avatar_url',},
     {title: '年龄', dataIndex: 'age', key: 'age',},
     {title: '电话号码', dataIndex: 'tel', key: 'tel',},
     {title: '邮箱', dataIndex: 'email', key: 'email',},
     {title: '用户类型', dataIndex: 'user_type', key: 'user_type',},
     {title: '注册时间', dataIndex: 'created_at', key: 'created_at',},
+    {title: '操作', dataIndex: 'action', key: 'action',},
   ],
   list:[
     {
@@ -63,6 +79,7 @@ const data = reactive({
       created_at: "2024-03-15T21:30:51+08:00",
       updated_at: "2024-03-15T21:30:51+08:00",
       user_name: "profikiller_admin",
+      avatar_url: "http://sbxaiblxv.hn-bkt.clouddn.com/cinema/2024-04-14_19:54:55.876_头像4.jpg",
       age: "18",
       tel: "136****0045",
       email: "e****@gmail.com",
@@ -100,6 +117,16 @@ function userDelete(selectedKeys) {
 
   .tables {
     padding: 10px;
+
+    .user_avatar {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+    }
+
+    .user_action.update {
+      margin-right: 10px;
+    }
   }
 
   .pages {

@@ -5,8 +5,10 @@ import (
 	"AfterEnd/model"
 	"AfterEnd/plugin/qiniu"
 	"AfterEnd/utils"
+	"errors"
 	"fmt"
 	"github.com/gin-gonic/gin"
+	"gorm.io/gorm"
 	"io/ioutil"
 	"mime/multipart"
 	"path/filepath"
@@ -59,8 +61,8 @@ func (ImageService) ImageUploadService(FileHeader *multipart.FileHeader, c *gin.
 	// 去数据库中查询该数据是否存在，若存在则直接下一个文件，不存在则上传和入库
 	fmt.Println(imageHash)
 	var photo model.ProfilePhoto
-	err = global.Db.Take(&photo, "hash = ?", imageHash).Error
-	if err == nil { // 数据库中存在这张图片
+	result := global.Db.Where("hash = ?", photo.Hash).First(&photo)
+	if result.Error != nil && !errors.Is(result.Error, gorm.ErrRecordNotFound) { // 数据库中存在这张图片
 		req = GenerateFileUploadReq(photo.Path, false, "图片已存在")
 		return req
 	}
