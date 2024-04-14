@@ -42,7 +42,7 @@ func CreateUser(permission string) {
 	if permission == "admin" {
 		role = ctype.PermissionAdmin
 	}
-	err = user_service.UserService{}.CreateUser(userName, password, role, email)
+	err = user_service.UserService{}.CreateUser(userName, password, role, "18", email, "")
 	if err != nil {
 		global.Log.Error(err.Error())
 		return

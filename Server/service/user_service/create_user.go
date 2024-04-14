@@ -10,7 +10,7 @@ import (
 
 const Avatar = "/uploads/avatar/default.png" // 默认的头像地址
 
-func (UserService) CreateUser(userName, password string, role ctype.Role, email string) error {
+func (UserService) CreateUser(userName, password string, role ctype.Role, age string, email, tel string) error {
 	// 判断用户名是否存在
 	var userModel model.User
 	err := global.Db.Take(&userModel, "user_name = ?", userName).Error
@@ -24,8 +24,10 @@ func (UserService) CreateUser(userName, password string, role ctype.Role, email 
 	err = global.Db.Create(&model.User{
 		UserName: userName,
 		Password: hashPwd,
-		Email:    email,
 		UserType: role,
+		Email:    email,
+		Age:      age,
+		Tel:      tel,
 	}).Error
 	if err != nil {
 		return err
