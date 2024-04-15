@@ -1,4 +1,5 @@
 Server/config.yaml
 Server/newConfig.yaml
 Web/node_modules
+Web/.env
 .idea/

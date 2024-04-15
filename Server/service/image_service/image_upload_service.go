@@ -61,10 +61,16 @@ func (ImageService) ImageUploadService(FileHeader *multipart.FileHeader, c *gin.
 	// 去数据库中查询该数据是否存在，若存在则直接下一个文件，不存在则上传和入库
 	fmt.Println(imageHash)
 	var photo model.ProfilePhoto
-	result := global.Db.Where("hash = ?", photo.Hash).First(&photo)
-	if result.Error != nil && !errors.Is(result.Error, gorm.ErrRecordNotFound) { // 数据库中存在这张图片
-		req = GenerateFileUploadReq(photo.Path, false, "图片已存在")
-		return req
+	result := global.Db.Where("hash = ?", imageHash).First(&photo)
+	if result.Error != nil {
+		if !errors.Is(result.Error, gorm.ErrRecordNotFound) {
+			// 查询数据库出错，返回错误信息
+			return GenerateFileUploadReq(fileName, false, fmt.Sprintf("查询数据库出错: %v", result.Error))
+		}
+		// 数据库中不存在该图片，继续上传
+	} else {
+		// 数据库中存在该图片，直接返回图片已存在的信息
+		return GenerateFileUploadReq(photo.Path, false, "图片已存在")
 	}
 
 	// 上传图片文件至七牛云存储空间
@@ -109,7 +115,7 @@ func (ImageService) ImageUploadService(FileHeader *multipart.FileHeader, c *gin.
 func GenerateFileUploadReq(filePath string, isSuccess bool, msg string) (req model.FileUploadResponse) {
 	return model.FileUploadResponse{
 		FilePath:  filePath,
-		IsSuccess: false,
+		IsSuccess: isSuccess,
 		Msg:       msg,
 	}
 }
