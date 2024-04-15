@@ -19,6 +19,7 @@ export const AdminInfoStore = defineStore('adminInfo', {
             this.$patch({
                 adminInfo: info
             })
+            // 持久化
             localStorage.setItem("adminInfo", JSON.stringify(info))
         },
         loadAdminInfo(){
@@ -26,6 +27,7 @@ export const AdminInfoStore = defineStore('adminInfo', {
             if (adminInfo === null){
                 return
             }
+            // 判断时间是否过期
             let exp = adminInfo.exp
             let nowTime = new Date().getTime()
             if (exp *1000 - nowTime < 0){
