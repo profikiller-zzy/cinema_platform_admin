@@ -15,6 +15,7 @@ const router = createRouter({
                 children:[
                     {
                         path :"",
+                        name :"adminHome",
                         redirect:"admin/home"
                     },
                     {

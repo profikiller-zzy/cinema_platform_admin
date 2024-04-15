@@ -2,11 +2,11 @@
     <div class="login_background">
         <div class="login_container">
             <div class="login_title">
-                用户登录
+                管理员登录
             </div>
             <div class="login_input">
                 <a-input
-                        v-model:value="user.user_name"
+                        v-model:value="admin.user_name"
                         placeholder="管理员用户名"
                 >
                     <template #prefix>
@@ -14,7 +14,7 @@
                     </template>
                 </a-input>
                 <a-input-password
-                        v-model:value="user.password"
+                        v-model:value="admin.password"
                         placeholder="请输入密码"
                 >
                     <template #prefix>
@@ -23,7 +23,7 @@
                 </a-input-password>
             </div>
             <div class="login_button">
-                <a-button type="primary" @click="emailLogin">登录</a-button>
+                <a-button type="primary" @click="Login">登录</a-button>
             </div>
         </div>
     </div>
@@ -34,24 +34,53 @@ import {reactive} from "vue";
 import {message} from 'ant-design-vue'
 import {useRouter} from "vue-router";
 import {useRoute} from "vue-router";
+import {adminLogin} from "@/api/login_api.js";
+import {parseToken} from "@/utils/jwt.js";
+import {AdminInfoStore} from "@/stores/admin_info.js";
+
 
 const router = useRouter()
 const route = useRoute()
-const user = reactive({
+const admin = reactive({
     user_name: "",
     password: "",
 })
 
-async function emailLogin() {
-    if (user.user_name.trim() === "") {
-        message.error('请输入用户名')
+async function Login() {
+  if (admin.user_name.trim() === "") {
+      message.error('请输入用户名')
+      return
+  }
+  if (admin.password.trim() === "") {
+      message.error('请输入密码')
+      return
+  }
+
+  let res = await adminLogin(admin)
+  if (res.code) {
+        message.error(res.msg)
         return
     }
-    if (user.password.trim() === "") {
-        message.error('请输入密码')
-        return
-    }
-    console.log("登录成功")
+  message.success("登录成功")
+
+  // res.data就是用户的ID
+  let store = AdminInfoStore()
+  let adminInfo = parseToken(res.data)
+  adminInfo.token = res.data
+  store.setAdminInfo(adminInfo)
+
+  // 成功后跳转
+  const redirect_url = route.query.redirect_url
+  if (redirect_url === undefined) {
+    // 跳转至home页面
+      setTimeout(() => {
+          router.push({name: "adminHome"})
+      }, 1000)
+      return
+  }
+  setTimeout(() => {
+      router.push({path: redirect_url})
+  }, 1000)
 
 }
 </script>
@@ -103,41 +132,6 @@ async function emailLogin() {
 
       .ant-btn {
         width: 100%;
-      }
-    }
-
-
-    .login_other {
-      width: 100%;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-
-      &::before {
-        width: 30%;
-        height: 1px;
-        background-color: #252121;
-        display: inline-block;
-        content: "";
-        margin-right: 5px;
-      }
-
-      &::after {
-        width: 30%;
-        height: 1px;
-        background-color: #252121;
-        display: inline-block;
-        content: "";
-        margin-left: 5px;
-      }
-    }
-
-    .login_icons {
-      .login_qq {
-        margin-top: 10px;
-        height: 40px;
-        width: 40px;
-        cursor: pointer;
       }
     }
 

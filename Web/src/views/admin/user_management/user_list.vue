@@ -52,7 +52,7 @@
 
 <script setup>
 import {reactive} from "vue";
-import {dateTransition} from "../../../../utils/dateTransition.js";
+import {dateTransition} from "@/utils/dateTransition.js";
 console.log(import.meta.env)
 
 const page = reactive({
