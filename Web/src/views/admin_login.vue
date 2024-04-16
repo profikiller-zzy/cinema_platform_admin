@@ -61,9 +61,9 @@ async function Login() {
         message.error(res.msg)
         return
     }
-  message.success("登录成功")
+  message.success(res.msg)
 
-  // res.data就是用户的ID
+  // res.data就是token
   let store = AdminInfoStore()
   let adminInfo = parseToken(res.data)
   adminInfo.token = res.data

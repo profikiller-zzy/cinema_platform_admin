@@ -1,5 +1,6 @@
 import {defineStore} from 'pinia'
 import { message } from 'ant-design-vue'
+import { useRouter } from "vue-router"
 
 export const AdminInfoStore = defineStore('adminInfo', {
     state: () => {
@@ -32,6 +33,10 @@ export const AdminInfoStore = defineStore('adminInfo', {
             let nowTime = new Date().getTime()
             if (exp *1000 - nowTime < 0){
                 message.warn("当前登录已失效")
+                // 将当前页面跳转至登录页面
+                const router = useRouter()
+                router.push({ name: 'login' }) // 假设登录页面的名称为 'login'
+                return
             }
             this.setAdminInfo(adminInfo)
         }

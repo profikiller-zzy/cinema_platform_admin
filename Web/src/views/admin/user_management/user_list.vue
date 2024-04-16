@@ -1,5 +1,52 @@
 <template>
   <div class="container">
+
+    <a-modal v-model:visible="data.AddModalVisible" title="添加用户" @ok="handleOk">
+            <a-form
+                    :model="formState"
+                    name="basic"
+                    ref="formRef"
+                    :label-col="{ span: 4 }"
+                    :wrapper-col="{ span: 20 }"
+                    autocomplete="off"
+            >
+                <a-form-item has-feedback label="用户名" name="user_name"
+                             :rules="[{ required: true, message: '请输入用户名!', trigger: 'blur' }]">
+                    <a-input v-model:value="formState.user_name" placeholder="用户名"/>
+                </a-form-item>
+                <a-form-item has-feedback label="密码" name="password"
+                             :rules="[{ required: true, message: '请输入密码!', trigger: 'blur' }]">
+                    <a-input-password v-model:value="formState.password" placeholder="密码"/>
+                </a-form-item>
+                <a-form-item has-feedback label="确认密码" name="re_password"
+                             :rules="[{ required: true, message: '请再次输入密码!' },
+                             {validator: validatePassword, trigger: 'change'}]">
+                    <a-input-password v-model:value="formState.re_password" placeholder="确认密码"/>
+                </a-form-item>
+                <a-form-item label="权限" name="role" :rules="[{ required: true, message: '请选择权限!' }]">
+                    <a-select
+                            ref="select"
+                            v-model:value="formState.role"
+                            style="width: 200px"
+                            :options="roleOptions"
+                    >
+                    </a-select>
+                </a-form-item>
+                <a-form-item has-feedback label="年龄" name="age"
+                             :rules="[{ required: false, message: '请输入年龄', trigger: 'blur' }]">
+                    <a-input v-model:value="formState.age" placeholder="年龄"/>
+                </a-form-item>
+                <a-form-item has-feedback label="邮箱" name="user_name"
+                             :rules="[{ required: false, message: '请输入邮箱!', trigger: 'blur' }]">
+                    <a-input v-model:value="formState.email" placeholder="邮箱"/>
+                </a-form-item>
+                <a-form-item has-feedback label="电话号码" name="user_name"
+                             :rules="[{ required: false, message: '请输入电话号码!', trigger: 'blur' }]">
+                    <a-input v-model:value="formState.tel" placeholder="电话号码"/>
+                </a-form-item>
+            </a-form>
+        </a-modal>
+
     <!-- search_box 搜索框 主要用于模糊匹配 -->
     <div class="search_box">
       <a-input-search
@@ -12,7 +59,7 @@
     </div>
     <!-- actions 主要是一些定义行为的按钮 -->
     <div class="actions">
-      <a-button type="primary">添加用户</a-button>
+      <a-button type="primary" @click="data.AddModalVisible = true">添加用户</a-button>
       <a-button type="danger" @click="userDelete" v-if="data.selectedRowKeys.length">删除用户</a-button>
     </div>
     <!-- tables 用于展示用户数据的列表 -->
@@ -21,6 +68,7 @@
           :columns="data.columns"
           :data-source="data.list"
           :pagination="false"
+          :total="data.count"
           :row-selection="{ selectedRowKeys: data.selectedRowKeys, onChange: onSelectChange}"
           rowKey="id">
         <template #bodyCell="{ column, record }">
@@ -51,15 +99,61 @@
 </template>
 
 <script setup>
-import {reactive} from "vue";
+import {reactive, ref} from "vue";
 import {dateTransition} from "@/utils/dateTransition.js";
-console.log(import.meta.env)
+import {userListApi, userCreateApi} from "@/api/user_management_api.js";
+import {message} from "ant-design-vue";
+import {AdminInfoStore} from "@/stores/admin_info.js";
+
+// 对话框中规则验证
+const formRef = ref({})
 
 const page = reactive({
   pageNum: 1,
   pageSize: 10,
   total: 50
 })
+
+// 用于置空
+const _formState = {
+  user_name: "",
+  password: "",
+  re_password: "",
+  role: undefined,
+  age: "",
+  email: "",
+  tel: "",
+}
+
+const formState = reactive({
+  user_name: "",
+  password: "",
+  re_password: "",
+  role: undefined,
+  age: "",
+  email: "",
+  tel: "",
+})
+
+const EditformState = reactive({
+  user_id: "",
+  role: ""
+})
+
+const roleOptions = [
+    {
+        value: 1,
+        label: "系统管理员"
+    },
+    {
+        value: 2,
+        label: "影院用户"
+    },
+    {
+        value: 3,
+        label: "普通用户"
+    },
+]
 
 const data = reactive({
   columns:[
@@ -87,6 +181,8 @@ const data = reactive({
     }
   ],
   selectedRowKeys: [],
+  count :0,
+  AddModalVisible: false, // 对话框是否可见
 })
 
 function onSelectChange(selectedKeys) {
@@ -96,6 +192,51 @@ function onSelectChange(selectedKeys) {
 function userDelete(selectedKeys) {
   console.log(data.selectedRowKeys)
 }
+
+async function handleOk() {
+  try {
+
+    // 主动触发验证
+    await formRef.value.validate()
+    // console.log(formState)
+    let res = await userCreateApi(formState)
+    if (res.code) {
+        message.error(res.msg)
+        return
+    }
+    message.success(res.msg)
+    data.AddModalVisible = false
+    getUserList()
+    // 置空
+    Object.assign(formState, _formState)
+    // // 清除验证规则
+    // formRef.value.clearValidate()
+    // GvbList.value.ExposeList()
+  } catch (e) {
+    console.log(e)
+  }
+}
+
+// 密码校验
+let validatePassword = async (_rule, value) => {
+  if (value === "") {
+    return Promise.reject("");
+  } else if (value !== formState.password) {
+      return Promise.reject("两次密码不一致!");
+  } else {
+      return Promise.resolve();
+  }
+}
+
+async function getUserList() {
+  // 在这里获取用户列表并且将用户数据存入data.list中
+  let store = AdminInfoStore()
+  store.loadAdminInfo()
+  let res = await userListApi({})
+  data.list = res.data.data_list
+  data.count = res.data.count
+}
+
 </script>
 
 <style lang="scss">
