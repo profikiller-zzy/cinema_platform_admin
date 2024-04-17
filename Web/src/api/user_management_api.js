@@ -12,3 +12,8 @@ export function userCreateApi(data) {
 export function userRemoveApi(id_list) {
     return Service.delete("/api/user_remove", {data: {id_list}})
 }
+
+// 编辑用户
+export function userEditApi(data) {
+    return Service.put("/api/user_edit", data)
+}

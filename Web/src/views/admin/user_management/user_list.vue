@@ -47,9 +47,9 @@
       </a-form>
     </a-modal>
 
-    <a-modal v-model:visible="data.EditModalVisible" title="添加用户" @ok="handleEditOk">
+    <a-modal v-model:visible="data.EditModalVisible" title="添加用户" @ok="EditUser">
       <a-form
-        :model="formState"
+        :model="EditFormState"
         name="basic"
         ref="formRef"
         :label-col="{ span: 4 }"
@@ -59,7 +59,7 @@
         <a-form-item label="权限" name="role" :rules="[{ required: true, message: '请选择权限!' }]">
             <a-select
                     ref="select"
-                    v-model:value="formState.role"
+                    v-model:value="EditFormState.user_type"
                     style="width: 200px"
                     :options="roleOptions"
             >
@@ -67,15 +67,15 @@
         </a-form-item>
         <a-form-item has-feedback label="年龄" name="age"
                      :rules="[{ required: false, message: '请输入年龄', trigger: 'blur' }]">
-            <a-input v-model:value="formState.age" placeholder="年龄"/>
+            <a-input v-model:value="EditFormState.age" placeholder="年龄"/>
         </a-form-item>
         <a-form-item has-feedback label="邮箱" name="user_name"
                    :rules="[{ required: false, message: '请输入邮箱!', trigger: 'blur' }]">
-          <a-input v-model:value="formState.email" placeholder="邮箱"/>
+          <a-input v-model:value="EditFormState.email" placeholder="邮箱"/>
         </a-form-item>
         <a-form-item has-feedback label="电话号码" name="user_name"
                    :rules="[{ required: false, message: '请输入电话号码!', trigger: 'blur' }]">
-          <a-input v-model:value="formState.tel" placeholder="电话号码"/>
+          <a-input v-model:value="EditFormState.tel" placeholder="电话号码"/>
         </a-form-item>
       </a-form>
     </a-modal>
@@ -119,7 +119,7 @@
             <span>{{ dateTransition(record.created_at) }}</span>
           </template>
           <template v-if="column.key === 'action'">
-            <a-button class="user_action update" @click="updateUser(record)" type="primary">编辑</a-button>
+            <a-button class="user_action update" @click="EditModel(record)" type="primary">编辑</a-button>
             <a-popconfirm
               title="是否确认删除？"
               ok-text="删除"
@@ -149,7 +149,7 @@
 <script setup>
 import {reactive, ref} from "vue";
 import {dateTransition} from "@/utils/dateTransition.js";
-import {userListApi, userCreateApi, userRemoveApi} from "@/api/user_management_api.js";
+import {userListApi, userCreateApi, userRemoveApi, userEditApi} from "@/api/user_management_api.js";
 import {message} from "ant-design-vue";
 import {AdminInfoStore} from "@/stores/admin_info.js";
 
@@ -185,9 +185,12 @@ const formState = reactive({
   tel: "",
 })
 
-const EditformState = reactive({
-  user_id: "",
-  role: ""
+const EditFormState = reactive({
+  user_type : undefined,
+  age: "",
+  tel: "",
+  email: "",
+  user_id: 23
 })
 
 const roleOptions = [
@@ -347,10 +350,26 @@ async function usersRemove() {
   }
 }
 
-function updateUser(record) {
-  data.updateID = record.id
+function EditModel(record) {
+  EditFormState.user_id = record.id
   data.EditModalVisible = true
+  EditFormState.user_type = record.user_type
+  EditFormState.age = record.age
+  EditFormState.email = record.email
+  EditFormState.tel = record.tel
 }
+
+async function EditUser() {
+  let res = await userEditApi(EditFormState)
+  if (res.code) {
+    message.error(res.msg)
+    return
+  } else {
+    message.success(res.msg)
+    getUserList()
+  }
+}
+
 
 </script>
 
