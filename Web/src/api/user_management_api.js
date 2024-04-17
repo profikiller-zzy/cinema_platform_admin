@@ -8,6 +8,7 @@ export function userCreateApi(data) {
     return Service.post("/api/user_create", data)
 }
 
-export function userRemoveApi(data) {
-    return Service.post("/api/user_create", data)
+// 删除用户 参数是用户的ID列表
+export function userRemoveApi(id_list) {
+    return Service.delete("/api/user_remove", {data: {id_list}})
 }

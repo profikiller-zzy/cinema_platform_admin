@@ -3,47 +3,47 @@
 
     <a-modal v-model:visible="data.AddModalVisible" title="添加用户" @ok="handleOk">
             <a-form
-                    :model="formState"
-                    name="basic"
-                    ref="formRef"
-                    :label-col="{ span: 4 }"
-                    :wrapper-col="{ span: 20 }"
-                    autocomplete="off"
+              :model="formState"
+              name="basic"
+              ref="formRef"
+              :label-col="{ span: 4 }"
+              :wrapper-col="{ span: 20 }"
+              autocomplete="off"
             >
-                <a-form-item has-feedback label="用户名" name="user_name"
-                             :rules="[{ required: true, message: '请输入用户名!', trigger: 'blur' }]">
-                    <a-input v-model:value="formState.user_name" placeholder="用户名"/>
-                </a-form-item>
-                <a-form-item has-feedback label="密码" name="password"
-                             :rules="[{ required: true, message: '请输入密码!', trigger: 'blur' }]">
-                    <a-input-password v-model:value="formState.password" placeholder="密码"/>
-                </a-form-item>
-                <a-form-item has-feedback label="确认密码" name="re_password"
-                             :rules="[{ required: true, message: '请再次输入密码!' },
-                             {validator: validatePassword, trigger: 'change'}]">
-                    <a-input-password v-model:value="formState.re_password" placeholder="确认密码"/>
-                </a-form-item>
-                <a-form-item label="权限" name="role" :rules="[{ required: true, message: '请选择权限!' }]">
-                    <a-select
-                            ref="select"
-                            v-model:value="formState.role"
-                            style="width: 200px"
-                            :options="roleOptions"
-                    >
-                    </a-select>
-                </a-form-item>
-                <a-form-item has-feedback label="年龄" name="age"
-                             :rules="[{ required: false, message: '请输入年龄', trigger: 'blur' }]">
-                    <a-input v-model:value="formState.age" placeholder="年龄"/>
-                </a-form-item>
-                <a-form-item has-feedback label="邮箱" name="user_name"
-                             :rules="[{ required: false, message: '请输入邮箱!', trigger: 'blur' }]">
-                    <a-input v-model:value="formState.email" placeholder="邮箱"/>
-                </a-form-item>
-                <a-form-item has-feedback label="电话号码" name="user_name"
-                             :rules="[{ required: false, message: '请输入电话号码!', trigger: 'blur' }]">
-                    <a-input v-model:value="formState.tel" placeholder="电话号码"/>
-                </a-form-item>
+              <a-form-item has-feedback label="用户名" name="user_name"
+                         :rules="[{ required: true, message: '请输入用户名!', trigger: 'blur' }]">
+                <a-input v-model:value="formState.user_name" placeholder="用户名"/>
+              </a-form-item>
+              <a-form-item has-feedback label="密码" name="password"
+                         :rules="[{ required: true, message: '请输入密码!', trigger: 'blur' }]">
+                <a-input-password v-model:value="formState.password" placeholder="密码"/>
+              </a-form-item>
+              <a-form-item has-feedback label="确认密码" name="re_password"
+                         :rules="[{ required: true, message: '请再次输入密码!' },
+                         {validator: validatePassword, trigger: 'change'}]">
+                <a-input-password v-model:value="formState.re_password" placeholder="确认密码"/>
+              </a-form-item>
+              <a-form-item label="权限" name="role" :rules="[{ required: true, message: '请选择权限!' }]">
+                  <a-select
+                          ref="select"
+                          v-model:value="formState.role"
+                          style="width: 200px"
+                          :options="roleOptions"
+                  >
+                  </a-select>
+              </a-form-item>
+              <a-form-item has-feedback label="年龄" name="age"
+                           :rules="[{ required: false, message: '请输入年龄', trigger: 'blur' }]">
+                  <a-input v-model:value="formState.age" placeholder="年龄"/>
+              </a-form-item>
+              <a-form-item has-feedback label="邮箱" name="user_name"
+                         :rules="[{ required: false, message: '请输入邮箱!', trigger: 'blur' }]">
+                <a-input v-model:value="formState.email" placeholder="邮箱"/>
+              </a-form-item>
+              <a-form-item has-feedback label="电话号码" name="user_name"
+                         :rules="[{ required: false, message: '请输入电话号码!', trigger: 'blur' }]">
+                <a-input v-model:value="formState.tel" placeholder="电话号码"/>
+              </a-form-item>
             </a-form>
         </a-modal>
 
@@ -60,7 +60,14 @@
     <!-- actions 主要是一些定义行为的按钮 -->
     <div class="actions">
       <a-button type="primary" @click="data.AddModalVisible = true">添加用户</a-button>
-      <a-button type="danger" @click="userDelete" v-if="data.selectedRowKeys.length">删除用户</a-button>
+      <a-popconfirm
+              title="你确定要批量删除这些用户么？"
+              ok-text="删除"
+              cancel-text="取消"
+              @confirm="usersRemove"
+            >
+              <a-button type="danger" v-if="data.selectedRowKeys.length">删除用户</a-button>
+      </a-popconfirm>
     </div>
     <!-- tables 用于展示用户数据的列表 -->
     <div class="tables">
@@ -80,7 +87,14 @@
           </template>
           <template v-if="column.key === 'action'">
             <a-button class="user_action update" type="primary">编辑</a-button>
-            <a-button class="user_action delete" type="danger">删除</a-button>
+            <a-popconfirm
+              title="是否确认删除？"
+              ok-text="删除"
+              cancel-text="取消"
+              @confirm="userRemove(record.id)"
+            >
+              <a-button class="user_action delete" type="danger">删除</a-button>
+            </a-popconfirm>
           </template>
         </template>
       </a-table>
@@ -102,12 +116,15 @@
 <script setup>
 import {reactive, ref} from "vue";
 import {dateTransition} from "@/utils/dateTransition.js";
-import {userListApi, userCreateApi} from "@/api/user_management_api.js";
+import {userListApi, userCreateApi, userRemoveApi} from "@/api/user_management_api.js";
 import {message} from "ant-design-vue";
 import {AdminInfoStore} from "@/stores/admin_info.js";
 
 // 对话框中规则验证
 const formRef = ref({})
+const idList = reactive({
+    id_list: []
+})
 
 const page = reactive({
   page_num: 1,
@@ -189,13 +206,8 @@ function onSelectChange(selectedKeys) {
   data.selectedRowKeys = selectedKeys
 }
 
-function userDelete(selectedKeys) {
-  console.log(data.selectedRowKeys)
-}
-
 async function handleOk() {
   try {
-
     // 主动触发验证
     await formRef.value.validate()
     // console.log(formState)
@@ -240,6 +252,64 @@ getUserList()
 
 function pageChange() {
   getUserList()
+}
+
+async function userRemove(user_id) {
+  try {
+    let res = await userRemoveApi([user_id]);
+    if (res.code === 0) {
+      const failedDeletes = res.data.filter(item => !item.is_success);
+      if (failedDeletes.length > 0) {
+        // 输出失败删除的用户信息及原因
+        // 显示错误提示
+        message.error("用户删除失败");
+        failedDeletes.forEach(item => {
+          message.error(`用户 ${item.user_id} 删除失败: ${item.msg}`);
+        });
+      } else {
+        // 所有用户删除成功的情况
+        message.success(`用户删除成功`);
+      }
+    } else {
+      // 显示错误提示
+      message.error(res.msg || "删除用户失败");
+    }
+    await getUserList();
+  } catch (error) {
+    // 处理请求失败的情况
+    console.error("Error:", error);
+    // 显示错误提示
+    message.error("请求失败");
+  }
+}
+
+async function usersRemove() {
+  try {
+    const res = await userRemoveApi(data.selectedRowKeys);
+    if (res.code === 0) {
+      const failedDeletes = res.data.filter(item => !item.is_success);
+      if (failedDeletes.length > 0) {
+        // 输出失败删除的用户信息及原因
+        // 显示错误提示
+        message.error("部分用户删除失败");
+        failedDeletes.forEach(item => {
+          message.error(`用户 ${item.user_id} 删除失败: ${item.msg}`);
+        });
+      } else {
+        // 所有用户删除成功的情况
+        message.success("所有用户删除成功");
+      }
+    } else {
+      // 显示错误提示
+      message.error(res.msg || "删除用户失败");
+    }
+    await getUserList();
+  } catch (error) {
+    // 处理请求失败的情况
+    console.error("Error:", error);
+    // 显示错误提示
+    message.error("请求失败");
+  }
 }
 
 </script>
