@@ -67,6 +67,7 @@ function onClick({key}) {
   }
 
   .admin_main{
+    background: white;
     width: calc(100% - 240px);
 
     header {
@@ -127,6 +128,7 @@ function onClick({key}) {
         background-color: white;
         height: calc(100vh - 90px);
         padding: 20px;
+        overflow-y: auto;
 
         .router_view {
           background-color: white;

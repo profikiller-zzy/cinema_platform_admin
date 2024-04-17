@@ -88,10 +88,11 @@
     <!-- pages 用于展示分页 -->
     <div class="pages">
        <a-pagination
-          v-model:current="page.pageNum"
-          v-model:page-size="page.pageSize"
+          v-model:current="page.page_num"
+          v-model:page-size="page.page_size"
+          @change="pageChange"
           :showSizeChanger="false"
-          :total="page.total"
+          :total="data.count"
           :show-total="total => `共 ${total} 条`"
        />
     </div>
@@ -109,9 +110,8 @@ import {AdminInfoStore} from "@/stores/admin_info.js";
 const formRef = ref({})
 
 const page = reactive({
-  pageNum: 1,
-  pageSize: 10,
-  total: 50
+  page_num: 1,
+  page_size: 5,
 })
 
 // 用于置空
@@ -232,9 +232,14 @@ async function getUserList() {
   // 在这里获取用户列表并且将用户数据存入data.list中
   let store = AdminInfoStore()
   store.loadAdminInfo()
-  let res = await userListApi({})
+  let res = await userListApi(page)
   data.list = res.data.data_list
   data.count = res.data.count
+}
+getUserList()
+
+function pageChange() {
+  getUserList()
 }
 
 </script>

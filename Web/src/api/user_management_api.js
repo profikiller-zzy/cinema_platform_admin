@@ -7,3 +7,7 @@ export function userListApi(params) {
 export function userCreateApi(data) {
     return Service.post("/api/user_create", data)
 }
+
+export function userRemoveApi(data) {
+    return Service.post("/api/user_create", data)
+}
