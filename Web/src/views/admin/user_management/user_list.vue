@@ -2,50 +2,83 @@
   <div class="container">
 
     <a-modal v-model:visible="data.AddModalVisible" title="添加用户" @ok="handleOk">
-            <a-form
-              :model="formState"
-              name="basic"
-              ref="formRef"
-              :label-col="{ span: 4 }"
-              :wrapper-col="{ span: 20 }"
-              autocomplete="off"
+      <a-form
+        :model="formState"
+        name="basic"
+        ref="formRef"
+        :label-col="{ span: 4 }"
+        :wrapper-col="{ span: 20 }"
+        autocomplete="off"
+      >
+        <a-form-item has-feedback label="用户名" name="user_name"
+                   :rules="[{ required: true, message: '请输入用户名!', trigger: 'blur' }]">
+          <a-input v-model:value="formState.user_name" placeholder="用户名"/>
+        </a-form-item>
+        <a-form-item has-feedback label="密码" name="password"
+                   :rules="[{ required: true, message: '请输入密码!', trigger: 'blur' }]">
+          <a-input-password v-model:value="formState.password" placeholder="密码"/>
+        </a-form-item>
+        <a-form-item has-feedback label="确认密码" name="re_password"
+                   :rules="[{ required: true, message: '请再次输入密码!' },
+                   {validator: validatePassword, trigger: 'change'}]">
+          <a-input-password v-model:value="formState.re_password" placeholder="确认密码"/>
+        </a-form-item>
+        <a-form-item label="权限" name="role" :rules="[{ required: true, message: '请选择权限!' }]">
+            <a-select
+                    ref="select"
+                    v-model:value="formState.role"
+                    style="width: 200px"
+                    :options="roleOptions"
             >
-              <a-form-item has-feedback label="用户名" name="user_name"
-                         :rules="[{ required: true, message: '请输入用户名!', trigger: 'blur' }]">
-                <a-input v-model:value="formState.user_name" placeholder="用户名"/>
-              </a-form-item>
-              <a-form-item has-feedback label="密码" name="password"
-                         :rules="[{ required: true, message: '请输入密码!', trigger: 'blur' }]">
-                <a-input-password v-model:value="formState.password" placeholder="密码"/>
-              </a-form-item>
-              <a-form-item has-feedback label="确认密码" name="re_password"
-                         :rules="[{ required: true, message: '请再次输入密码!' },
-                         {validator: validatePassword, trigger: 'change'}]">
-                <a-input-password v-model:value="formState.re_password" placeholder="确认密码"/>
-              </a-form-item>
-              <a-form-item label="权限" name="role" :rules="[{ required: true, message: '请选择权限!' }]">
-                  <a-select
-                          ref="select"
-                          v-model:value="formState.role"
-                          style="width: 200px"
-                          :options="roleOptions"
-                  >
-                  </a-select>
-              </a-form-item>
-              <a-form-item has-feedback label="年龄" name="age"
-                           :rules="[{ required: false, message: '请输入年龄', trigger: 'blur' }]">
-                  <a-input v-model:value="formState.age" placeholder="年龄"/>
-              </a-form-item>
-              <a-form-item has-feedback label="邮箱" name="user_name"
-                         :rules="[{ required: false, message: '请输入邮箱!', trigger: 'blur' }]">
-                <a-input v-model:value="formState.email" placeholder="邮箱"/>
-              </a-form-item>
-              <a-form-item has-feedback label="电话号码" name="user_name"
-                         :rules="[{ required: false, message: '请输入电话号码!', trigger: 'blur' }]">
-                <a-input v-model:value="formState.tel" placeholder="电话号码"/>
-              </a-form-item>
-            </a-form>
-        </a-modal>
+            </a-select>
+        </a-form-item>
+        <a-form-item has-feedback label="年龄" name="age"
+                     :rules="[{ required: false, message: '请输入年龄', trigger: 'blur' }]">
+            <a-input v-model:value="formState.age" placeholder="年龄"/>
+        </a-form-item>
+        <a-form-item has-feedback label="邮箱" name="user_name"
+                   :rules="[{ required: false, message: '请输入邮箱!', trigger: 'blur' }]">
+          <a-input v-model:value="formState.email" placeholder="邮箱"/>
+        </a-form-item>
+        <a-form-item has-feedback label="电话号码" name="user_name"
+                   :rules="[{ required: false, message: '请输入电话号码!', trigger: 'blur' }]">
+          <a-input v-model:value="formState.tel" placeholder="电话号码"/>
+        </a-form-item>
+      </a-form>
+    </a-modal>
+
+    <a-modal v-model:visible="data.EditModalVisible" title="添加用户" @ok="handleEditOk">
+      <a-form
+        :model="formState"
+        name="basic"
+        ref="formRef"
+        :label-col="{ span: 4 }"
+        :wrapper-col="{ span: 20 }"
+        autocomplete="off"
+      >
+        <a-form-item label="权限" name="role" :rules="[{ required: true, message: '请选择权限!' }]">
+            <a-select
+                    ref="select"
+                    v-model:value="formState.role"
+                    style="width: 200px"
+                    :options="roleOptions"
+            >
+            </a-select>
+        </a-form-item>
+        <a-form-item has-feedback label="年龄" name="age"
+                     :rules="[{ required: false, message: '请输入年龄', trigger: 'blur' }]">
+            <a-input v-model:value="formState.age" placeholder="年龄"/>
+        </a-form-item>
+        <a-form-item has-feedback label="邮箱" name="user_name"
+                   :rules="[{ required: false, message: '请输入邮箱!', trigger: 'blur' }]">
+          <a-input v-model:value="formState.email" placeholder="邮箱"/>
+        </a-form-item>
+        <a-form-item has-feedback label="电话号码" name="user_name"
+                   :rules="[{ required: false, message: '请输入电话号码!', trigger: 'blur' }]">
+          <a-input v-model:value="formState.tel" placeholder="电话号码"/>
+        </a-form-item>
+      </a-form>
+    </a-modal>
 
     <!-- search_box 搜索框 主要用于模糊匹配 -->
     <div class="search_box">
@@ -86,7 +119,7 @@
             <span>{{ dateTransition(record.created_at) }}</span>
           </template>
           <template v-if="column.key === 'action'">
-            <a-button class="user_action update" type="primary">编辑</a-button>
+            <a-button class="user_action update" @click="updateUser(record)" type="primary">编辑</a-button>
             <a-popconfirm
               title="是否确认删除？"
               ok-text="删除"
@@ -200,6 +233,8 @@ const data = reactive({
   selectedRowKeys: [],
   count :0,
   AddModalVisible: false, // 对话框是否可见
+  EditModalVisible: false,
+  updateID: 0,
 })
 
 function onSelectChange(selectedKeys) {
@@ -310,6 +345,11 @@ async function usersRemove() {
     // 显示错误提示
     message.error("请求失败");
   }
+}
+
+function updateUser(record) {
+  data.updateID = record.id
+  data.EditModalVisible = true
 }
 
 </script>

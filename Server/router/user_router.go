@@ -12,5 +12,6 @@ func (r RGroup) UserRouter() {
 	r.GET("/user_list/", middleware.JwtAuth(1), userApiApp.UserListView)
 	r.GET("/individual_user/", middleware.JwtAuth(1), userApiApp.IndividualUserView)
 	r.POST("/user_create/", middleware.JwtAuth(1), userApiApp.UserCreateView)
+	r.POST("/user_edit/", middleware.JwtAuth(1), userApiApp.UserEditView)
 	r.DELETE("/user_remove/", middleware.JwtAuth(1), userApiApp.UserRemoveView)
 }
