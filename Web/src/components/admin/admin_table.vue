@@ -24,14 +24,14 @@
         <a-button type="primary" @click="data.AddModalVisible = true" v-if="props.isAdd">添加</a-button>
       </slot>
 
-      <slot name="remove">
+      <slot name="batchRemove">
         <a-popconfirm
             title="你确定要批量删除么？"
             ok-text="删除"
             cancel-text="取消"
-            @confirm="usersRemove"
+            @confirm="batchRemove"
         >
-          <a-button type="danger" v-if="props.isDelete && data.selectedRowKeys.length">删除用户</a-button>
+          <a-button type="danger" v-if="props.isDelete && data.selectedRowKeys.length">批量删除</a-button>
         </a-popconfirm>
       </slot>
     </div>
@@ -60,7 +60,7 @@
                       title="是否确认删除？"
                       ok-text="删除"
                       cancel-text="取消"
-                      @confirm="userRemove(record.id)"
+                      @confirm="sigleRemove(record.id)"
                       v-if="props.isDelete"
                   >
                     <a-button class="user_action delete" type="danger">删除</a-button>
@@ -87,7 +87,7 @@
 </template>
 
 <script setup>
-import {baseApiList} from "@/api/base_api.js";
+import {baseApiList, baseRemoveApi} from "@/api/base_api.js";
 import {reactive} from "vue";
 import {dateTransition} from "@/utils/dateTransition.js";
 import {message} from "ant-design-vue";
@@ -159,64 +159,66 @@ function pageChange() {
 }
 
 // 删除单个用户
-async function userRemove(user_id) {
-  emits("delete", [user_id])
-  // try {
-  //   let res = await userRemoveApi([user_id]);
-  //   if (res.code === 0) {
-  //     const failedDeletes = res.data.filter(item => !item.is_success);
-  //     if (failedDeletes.length > 0) {
-  //       // 输出失败删除的用户信息及原因
-  //       // 显示错误提示
-  //       message.error("用户删除失败");
-  //       failedDeletes.forEach(item => {
-  //         message.error(`用户 ${item.user_id} 删除失败: ${item.msg}`);
-  //       });
-  //     } else {
-  //       // 所有用户删除成功的情况
-  //       message.success(`用户删除成功`);
-  //     }
-  //   } else {
-  //     // 显示错误提示
-  //     message.error(res.msg || "删除用户失败");
-  //   }
-  //   await getUserList();
-  // } catch (error) {
-  //   // 处理请求失败的情况
-  //   console.error("Error:", error);
-  //   // 显示错误提示
-  //   message.error("请求失败");
-  // }
+async function batchRemove() {
+  try {
+    let res = await baseRemoveApi(props.baseUrl, data.selectedRowKeys);
+    if (res.code === 0) {
+      const failedDeletes = res.data.filter(item => !item.is_success);
+      if (failedDeletes.length > 0) {
+        // 输出失败删除的用户信息及原因
+        // 显示错误提示
+        message.error("用户删除失败");
+        failedDeletes.forEach(item => {
+          message.error(`用户 ${item.user_id} 删除失败: ${item.msg}`);
+        });
+      } else {
+        // 所有用户删除成功的情况
+        message.success(`用户删除成功`);
+      }
+    } else {
+      // 显示错误提示
+      message.error(res.msg || "删除用户失败");
+    }
+    getDataList(page);
+    emits("delete", data.selectedRowKeys)
+    data.selectedRowKeys = []
+  } catch (error) {
+    // 处理请求失败的情况
+    console.error("Error:", error);
+    // 显示错误提示
+    message.error("请求失败");
+  }
 }
 
-async function usersRemove() {
-  emits("delete", data.selectedRowKeys)
-  // try {
-  //   const res = await userRemoveApi(data.selectedRowKeys);
-  //   if (res.code === 0) {
-  //     const failedDeletes = res.data.filter(item => !item.is_success);
-  //     if (failedDeletes.length > 0) {
-  //       // 输出失败删除的用户信息及原因
-  //       // 显示错误提示
-  //       message.error("部分用户删除失败");
-  //       failedDeletes.forEach(item => {
-  //         message.error(`用户 ${item.user_id} 删除失败: ${item.msg}`);
-  //       });
-  //     } else {
-  //       // 所有用户删除成功的情况
-  //       message.success("所有用户删除成功");
-  //     }
-  //   } else {
-  //     // 显示错误提示
-  //     message.error(res.msg || "删除用户失败");
-  //   }
-  //   await getUserList();
-  // } catch (error) {
-  //   // 处理请求失败的情况
-  //   console.error("Error:", error);
-  //   // 显示错误提示
-  //   message.error("请求失败");
-  // }
+async function sigleRemove(user_id) {
+try {
+    let res = await baseRemoveApi(props.baseUrl, [user_id]);
+    if (res.code === 0) {
+      const failedDeletes = res.data.filter(item => !item.is_success);
+      if (failedDeletes.length > 0) {
+        // 输出失败删除的用户信息及原因
+        // 显示错误提示
+        message.error("用户删除失败");
+        failedDeletes.forEach(item => {
+          message.error(`用户 ${item.user_id} 删除失败: ${item.msg}`);
+        });
+      } else {
+        // 所有用户删除成功的情况
+        message.success(`用户删除成功`);
+      }
+    } else {
+      // 显示错误提示
+      message.error(res.msg || "删除用户失败");
+    }
+    getDataList(page);
+    emits("delete", data.selectedRowKeys)
+    data.selectedRowKeys = []
+  } catch (error) {
+    // 处理请求失败的情况
+    console.error("Error:", error);
+    // 显示错误提示
+    message.error("请求失败");
+  }
 }
 
 // 刷新用户列表页面

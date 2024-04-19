@@ -80,7 +80,7 @@
     <AdminTable
         @delete="userRemove"
         :columns="data.columns"
-        base-url="/api/user_list"
+        base-url="/api/users"
         ref="adminTable"
         like-title="搜索用户名"
         is-delete is-add>
