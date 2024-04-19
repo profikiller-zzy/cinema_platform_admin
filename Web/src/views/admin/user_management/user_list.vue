@@ -1,6 +1,5 @@
 <template>
-  <div class="container">
-
+  <div>
     <a-modal v-model:visible="data.AddModalVisible" title="添加用户" @ok="AddUser">
       <a-form
         :model="formState"
@@ -46,7 +45,6 @@
         </a-form-item>
       </a-form>
     </a-modal>
-
     <a-modal v-model:visible="data.EditModalVisible" title="编辑用户" @ok="EditUser">
       <a-form
         :model="EditFormState"
@@ -79,109 +77,76 @@
         </a-form-item>
       </a-form>
     </a-modal>
-
-    <!-- search_box 搜索框 主要用于模糊匹配 -->
-    <div class="search_box">
-      <a-input-search
-        v-model:value="page.key"
-        placeholder="输入你想搜索的用户名"
-        enter-button
-        @search="onSearch"
-        style="width: 300px"
-      />
-      <div class="user_list_refresh">
-        <a-button @click="refresh"><i class="iconfont icon-shuaxin"></i></a-button>
-      </div>
-      <a-select
-          class="user_list_select"
-          placeholder="选择权限"
-          ref="select"
-          v-model:value="page.user_type"
-          style="width: 200px"
-          :options="roleOptions"
-          @change="changeUserType"
-      >
-      </a-select>
-    </div>
-    <!-- actions 主要是一些定义行为的按钮 -->
-    <div class="actions">
-      <a-button type="primary" @click="data.AddModalVisible = true">添加用户</a-button>
-      <a-popconfirm
-              title="你确定要批量删除这些用户么？"
-              ok-text="删除"
-              cancel-text="取消"
-              @confirm="usersRemove"
-            >
-              <a-button type="danger" v-if="data.selectedRowKeys.length">删除用户</a-button>
-      </a-popconfirm>
-    </div>
-    <!-- tables 用于展示用户数据的列表 -->
-    <a-spin :spinning="data.spinning" tip="加载中" :delay="300">
-      <div class="tables">
-        <a-table
-            :columns="data.columns"
-            :data-source="data.list"
-            :pagination="false"
-            :total="data.count"
-            :row-selection="{ selectedRowKeys: data.selectedRowKeys, onChange: onSelectChange}"
-            rowKey="id">
-          <template #bodyCell="{ column, record }">
-            <template v-if="column.key === 'avatar_url'">
-              <img class="user_avatar" :src="record.avatar_url">
-            </template>
-            <template v-if="column.key === 'created_at'">
-              <span>{{ dateTransition(record.created_at) }}</span>
-            </template>
-            <template v-if="column.key === 'action'">
-              <a-button class="user_action update" @click="EditModel(record)" type="primary">编辑</a-button>
-              <a-popconfirm
-                title="是否确认删除？"
-                ok-text="删除"
-                cancel-text="取消"
-                @confirm="userRemove(record.id)"
-              >
-                <a-button class="user_action delete" type="danger">删除</a-button>
-              </a-popconfirm>
-            </template>
-          </template>
-        </a-table>
-      </div>
-    </a-spin>
-    <!-- pages 用于展示分页 -->
-    <div class="pages">
-       <a-pagination
-          v-model:current="page.page_num"
-          v-model:page-size="page.page_size"
-          @change="pageChange"
-          :showSizeChanger="false"
-          :total="data.count"
-          :show-total="total => `共 ${total} 条`"
-       />
-    </div>
+    <AdminTable
+        @delete="userRemove"
+        :columns="data.columns"
+        base-url="/api/user_list"
+        ref="adminTable"
+        like-title="搜索用户名"
+        is-delete is-add>
+      <template #add>
+        <a-button type="primary" @click="data.AddModalVisible = true">添加</a-button>
+      </template>
+      <template #edit="{record}">
+        <a-button class="user_action update" @click="EditModel(record)" type="primary">编辑</a-button>
+      </template>
+      <template #cell="{ column, record }">
+        <template v-if="column.key === 'avatar_url'">
+          <img class="user_avatar" :src="record.avatar_url">
+        </template>
+      </template>
+      <template #filters>
+        <a-select
+            class="user_list_select"
+            placeholder="选择权限"
+            ref="select"
+            v-model:value="filter"
+            style="width: 200px"
+            :options="roleOptions"
+            @change="OnFilter"
+        >
+        </a-select>
+      </template>
+    </AdminTable>
   </div>
 </template>
 
 <script setup>
+import AdminTable from "@/components/admin/admin_table.vue";
 import {reactive, ref} from "vue";
-import {dateTransition} from "@/utils/dateTransition.js";
-import {userListApi, userCreateApi, userRemoveApi, userEditApi} from "@/api/user_management_api.js";
+import {userListApi, userCreateApi, userEditApi} from "@/api/user_management_api.js";
 import {message} from "ant-design-vue";
 import {AdminInfoStore} from "@/stores/admin_info.js";
 
 // 对话框中规则验证
 const formRef = ref({})
-const idList = reactive({
-    id_list: []
-})
-
-const page = reactive({
-  page_num: 1,
-  page_size: 5,
-  key: "",
-  user_type: undefined,
-})
-
-// 用于置空
+const adminTable = ref(null)
+// 权限映射
+const roleOptions = [
+  {
+    value: 1,
+    label: "系统管理员"
+  },
+  {
+    value: 2,
+    label: "影院用户"
+  },
+  {
+    value: 3,
+    label: "普通用户"
+  },
+]
+// 密码校验，验证两次输入的密码是否一致
+let validatePassword = async (_rule, value) => {
+  if (value === "") {
+    return Promise.reject("");
+  } else if (value !== formState.password) {
+    return Promise.reject("两次密码不一致!");
+  } else {
+    return Promise.resolve();
+  }
+}
+// 用于置空formState
 const _formState = {
   user_name: "",
   password: "",
@@ -191,7 +156,7 @@ const _formState = {
   email: "",
   tel: "",
 }
-
+// 表单信息
 const formState = reactive({
   user_name: "",
   password: "",
@@ -201,32 +166,24 @@ const formState = reactive({
   email: "",
   tel: "",
 })
-
 const EditFormState = reactive({
-  user_type : undefined,
+  user_type: undefined,
   age: "",
   tel: "",
   email: "",
   user_id: 23
 })
-
-const roleOptions = [
-    {
-        value: 1,
-        label: "系统管理员"
-    },
-    {
-        value: 2,
-        label: "影院用户"
-    },
-    {
-        value: 3,
-        label: "普通用户"
-    },
-]
+const filter = ref(undefined)
+function OnFilter() {
+  adminTable.value.ExportList({
+    user_type: filter.value
+  })
+}
 
 const data = reactive({
-  columns:[
+  AddModalVisible: false, // 对话框是否可见
+  EditModalVisible: false,
+  columns: [
     {title: '用户ID', dataIndex: 'id', key: 'id',},
     {title: '用户名', dataIndex: 'user_name', key: 'user_name',},
     {title: '头像', dataIndex: 'avatar_url', key: 'avatar_url',},
@@ -237,32 +194,22 @@ const data = reactive({
     {title: '注册时间', dataIndex: 'created_at', key: 'created_at',},
     {title: '操作', dataIndex: 'action', key: 'action',},
   ],
-  list:[
-    {
-      id: 22,
-      created_at: "2024-03-15T21:30:51+08:00",
-      updated_at: "2024-03-15T21:30:51+08:00",
-      user_name: "profikiller_admin",
-      avatar_url: "http://sbxaiblxv.hn-bkt.clouddn.com/cinema/2024-04-14_19:54:55.876_头像4.jpg",
-      age: "18",
-      tel: "136****0045",
-      email: "e****@gmail.com",
-      user_type: "管理员",
-      role_id: 3,
-    }
-  ],
-  selectedRowKeys: [],
-  count :0,
-  AddModalVisible: false, // 对话框是否可见
-  EditModalVisible: false,
-  updateID: 0,
-  spinning: true, // 默认是在加载中
 })
 
-function onSelectChange(selectedKeys) {
-  data.selectedRowKeys = selectedKeys
+function EditModel(record) {
+  data.EditModalVisible = true
+  EditFormState.user_id = record.id
+  EditFormState.user_type = record.role_id
+  EditFormState.age = record.age
+  EditFormState.email = record.email
+  EditFormState.tel = record.tel
 }
 
+function userRemove(user_id) {
+  console.log(user_id)
+}
+
+// 创建用户
 async function AddUser() {
   try {
     // 主动触发验证
@@ -275,7 +222,7 @@ async function AddUser() {
     }
     message.success(res.msg)
     data.AddModalVisible = false
-    getUserList()
+    // await getUserList()
     // 置空
     Object.assign(formState, _formState)
     // // 清除验证规则
@@ -286,100 +233,7 @@ async function AddUser() {
   }
 }
 
-// 密码校验
-let validatePassword = async (_rule, value) => {
-  if (value === "") {
-    return Promise.reject("");
-  } else if (value !== formState.password) {
-      return Promise.reject("两次密码不一致!");
-  } else {
-      return Promise.resolve();
-  }
-}
-
-async function getUserList() {
-  // 在这里获取用户列表并且将用户数据存入data.list中
-  data.spinning = true
-  let store = AdminInfoStore()
-  store.loadAdminInfo()
-  let res = await userListApi(page)
-  data.list = res.data.data_list
-  data.count = res.data.count
-  data.spinning = false
-}
-getUserList()
-
-function pageChange() {
-  getUserList()
-}
-
-async function userRemove(user_id) {
-  try {
-    let res = await userRemoveApi([user_id]);
-    if (res.code === 0) {
-      const failedDeletes = res.data.filter(item => !item.is_success);
-      if (failedDeletes.length > 0) {
-        // 输出失败删除的用户信息及原因
-        // 显示错误提示
-        message.error("用户删除失败");
-        failedDeletes.forEach(item => {
-          message.error(`用户 ${item.user_id} 删除失败: ${item.msg}`);
-        });
-      } else {
-        // 所有用户删除成功的情况
-        message.success(`用户删除成功`);
-      }
-    } else {
-      // 显示错误提示
-      message.error(res.msg || "删除用户失败");
-    }
-    await getUserList();
-  } catch (error) {
-    // 处理请求失败的情况
-    console.error("Error:", error);
-    // 显示错误提示
-    message.error("请求失败");
-  }
-}
-
-async function usersRemove() {
-  try {
-    const res = await userRemoveApi(data.selectedRowKeys);
-    if (res.code === 0) {
-      const failedDeletes = res.data.filter(item => !item.is_success);
-      if (failedDeletes.length > 0) {
-        // 输出失败删除的用户信息及原因
-        // 显示错误提示
-        message.error("部分用户删除失败");
-        failedDeletes.forEach(item => {
-          message.error(`用户 ${item.user_id} 删除失败: ${item.msg}`);
-        });
-      } else {
-        // 所有用户删除成功的情况
-        message.success("所有用户删除成功");
-      }
-    } else {
-      // 显示错误提示
-      message.error(res.msg || "删除用户失败");
-    }
-    await getUserList();
-  } catch (error) {
-    // 处理请求失败的情况
-    console.error("Error:", error);
-    // 显示错误提示
-    message.error("请求失败");
-  }
-}
-
-function EditModel(record) {
-  EditFormState.user_id = record.id
-  data.EditModalVisible = true
-  EditFormState.user_type = record.role_id
-  EditFormState.age = record.age
-  EditFormState.email = record.email
-  EditFormState.tel = record.tel
-}
-
+// 编辑用户
 async function EditUser() {
   let res = await userEditApi(EditFormState)
   if (res.code) {
@@ -387,76 +241,14 @@ async function EditUser() {
     return
   } else {
     message.success(res.msg)
-    getUserList()
+    // getUserList()
   }
   data.EditModalVisible = false
 }
-
-// 刷新用户列表页面
-function refresh() {
-  message.success("刷新成功")
-  getUserList()
-}
-
-function onSearch() {
-  page.key = page.key.trim()
-  page.page_num = 1
-  getUserList()
-}
-
-function changeUserType() {
-  console.log(page)
-  onSearch()
-}
+// getUserList()
 
 </script>
 
 <style lang="scss">
-.container {
-  background-color: white;
 
-  .search_box {
-    padding: 10px;
-    border-bottom: 1px solid #e8e6ff;
-    position: relative;
-
-    .user_list_select {
-      margin-left: 10px;
-    }
-
-    .user_list_refresh {
-      position: absolute;
-      right: 10px;
-      top: 10px;
-    }
-  }
-
-  .actions {
-    padding: 10px;
-
-    .ant-btn {
-      margin-left: 10px;
-    }
-  }
-
-  .tables {
-    padding: 0 10px 10px 10px;
-
-    .user_avatar {
-      width: 50px;
-      height: 50px;
-      border-radius: 50%;
-    }
-
-    .user_action.update {
-      margin-right: 10px;
-    }
-  }
-
-  .pages {
-    display: flex;
-    justify-content: center;
-    padding: 10px;
-  }
-}
 </style>
