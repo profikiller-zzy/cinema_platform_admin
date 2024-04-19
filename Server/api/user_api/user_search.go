@@ -9,24 +9,8 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-type UserResponse struct {
-	model.MODEL
-	UserName  string     `json:"user_name"`  // 用户名，唯一
-	AvatarUrl string     `json:"avatar_url"` // 用户头像地址
-	Age       string     `json:"age"`        // 年龄
-	Tel       string     `json:"tel"`        // 电话号码
-	Email     string     `json:"email"`      // 邮箱，用户可以通过邮箱登录
-	UserType  ctype.Role `json:"user_type"`  // 用户类别，用于区分普通用户、影院用户、平台管理员(属于自定义类型，后期需要添加)，3为普通用户，2为电影院用户，1为平台管理员
-	RoleID    int        `json:"role_id"`
-}
-
-type UserListRequest struct {
-	model.PageInfo
-	Role int `json:"role" form:"role"`
-}
-
-// UserListView 为管理员返回全部用户信息
-func (UserApi) UserListView(c *gin.Context) {
+// UserSearchView 管理员搜索用户名，返回与用户名有关的用户
+func (UserApi) UserSearchView(c *gin.Context) {
 	_claims, _ := c.Get("claims")
 	claims := _claims.(*jwts.CustomClaims)
 	var pageModel model.PageInfo

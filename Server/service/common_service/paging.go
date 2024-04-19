@@ -15,12 +15,19 @@ type PageInfoDebug struct {
 func PagingList[T any](model T, debug PageInfoDebug) (list []T, count int64, err error) {
 	// 对数据模型列表进行分页
 	db := global.Db
+	debug.Debug = true
 	if debug.Debug {
 		db = global.Db.Session(&gorm.Session{Logger: global.MysqlLog})
 	}
 	var offset int
 	// 使用到model T入参中携带的条件参数
-	count = db.Where(model).Select("id").Find(&list).RowsAffected
+	// 假如没有关键字
+	if debug.Key == "" {
+		count = db.Where(model).Select("id").Find(&list).RowsAffected
+	} else { // 前端携带了关键字
+		count = db.Where(model).Where("user_name LIKE ?", "%"+debug.Key+"%").Select("id").Find(&list).RowsAffected
+	}
+
 	if debug.PageNum == 0 {
 		offset = 0
 	} else {
@@ -30,6 +37,11 @@ func PagingList[T any](model T, debug PageInfoDebug) (list []T, count int64, err
 	if debug.Sort == "" { // 默认按照创建时间从新到旧排
 		debug.Sort = "created_at desc"
 	}
-	err = db.Where(model).Limit(debug.PageSize).Offset(offset).Order(debug.Sort).Find(&list).Error
+
+	if debug.Key == "" {
+		err = db.Where(model).Limit(debug.PageSize).Offset(offset).Order(debug.Sort).Find(&list).Error
+	} else {
+		err = db.Model(&model).Where("user_name LIKE ?", "%"+debug.Key+"%").Limit(debug.PageSize).Offset(offset).Order(debug.Sort).Find(&list).Error
+	}
 	return list, count, err
 }

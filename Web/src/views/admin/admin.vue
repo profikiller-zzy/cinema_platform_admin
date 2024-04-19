@@ -7,7 +7,7 @@
         <div class="header_left">
           <a-breadcrumb>
             <a-breadcrumb-item>后台首页</a-breadcrumb-item>
-            <a-breadcrumb-item><a href="#">管理员中心</a></a-breadcrumb-item>
+            <a-breadcrumb-item>管理员中心</a-breadcrumb-item>
             <a-breadcrumb-item>用户管理</a-breadcrumb-item>
           </a-breadcrumb>
         </div>

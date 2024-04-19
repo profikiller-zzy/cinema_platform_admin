@@ -58,18 +58,18 @@ const data = reactive({
           title: "用户列表",
           name: "user_list",
         },
-        {
-          id: "4",
-          icon: "iconfont icon-tianjiayonghu",
-          title: "添加用户",
-          name: "user_create",
-        },
-        {
-          id: "5",
-          icon: "iconfont icon-yonghuchaxun",
-          title: "用户查询",
-          name: "user_query",
-        }
+        // {
+        //   id: "4",
+        //   icon: "iconfont icon-tianjiayonghu",
+        //   title: "添加用户",
+        //   name: "user_create",
+        // },
+        // {
+        //   id: "5",
+        //   icon: "iconfont icon-yonghuchaxun",
+        //   title: "用户查询",
+        //   name: "user_query",
+        // }
       ]
     },
   ]

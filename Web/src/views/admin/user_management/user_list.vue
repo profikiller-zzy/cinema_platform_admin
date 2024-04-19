@@ -1,7 +1,7 @@
 <template>
   <div class="container">
 
-    <a-modal v-model:visible="data.AddModalVisible" title="添加用户" @ok="handleOk">
+    <a-modal v-model:visible="data.AddModalVisible" title="添加用户" @ok="AddUser">
       <a-form
         :model="formState"
         name="basic"
@@ -47,7 +47,7 @@
       </a-form>
     </a-modal>
 
-    <a-modal v-model:visible="data.EditModalVisible" title="添加用户" @ok="EditUser">
+    <a-modal v-model:visible="data.EditModalVisible" title="编辑用户" @ok="EditUser">
       <a-form
         :model="EditFormState"
         name="basic"
@@ -83,12 +83,15 @@
     <!-- search_box 搜索框 主要用于模糊匹配 -->
     <div class="search_box">
       <a-input-search
-        v-model:value="value"
-        placeholder="请输入你想搜索的用户"
+        v-model:value="page.key"
+        placeholder="输入你想搜索的用户名"
         enter-button
         @search="onSearch"
         style="width: 300px"
       />
+      <div class="user_list_refresh">
+        <a-button @click="refresh"><i class="iconfont icon-shuaxin"></i></a-button>
+      </div>
     </div>
     <!-- actions 主要是一些定义行为的按钮 -->
     <div class="actions">
@@ -103,35 +106,37 @@
       </a-popconfirm>
     </div>
     <!-- tables 用于展示用户数据的列表 -->
-    <div class="tables">
-      <a-table
-          :columns="data.columns"
-          :data-source="data.list"
-          :pagination="false"
-          :total="data.count"
-          :row-selection="{ selectedRowKeys: data.selectedRowKeys, onChange: onSelectChange}"
-          rowKey="id">
-        <template #bodyCell="{ column, record }">
-          <template v-if="column.key === 'avatar_url'">
-            <img class="user_avatar" :src="record.avatar_url">
+    <a-spin :spinning="data.spinning" tip="加载中" :delay="300">
+      <div class="tables">
+        <a-table
+            :columns="data.columns"
+            :data-source="data.list"
+            :pagination="false"
+            :total="data.count"
+            :row-selection="{ selectedRowKeys: data.selectedRowKeys, onChange: onSelectChange}"
+            rowKey="id">
+          <template #bodyCell="{ column, record }">
+            <template v-if="column.key === 'avatar_url'">
+              <img class="user_avatar" :src="record.avatar_url">
+            </template>
+            <template v-if="column.key === 'created_at'">
+              <span>{{ dateTransition(record.created_at) }}</span>
+            </template>
+            <template v-if="column.key === 'action'">
+              <a-button class="user_action update" @click="EditModel(record)" type="primary">编辑</a-button>
+              <a-popconfirm
+                title="是否确认删除？"
+                ok-text="删除"
+                cancel-text="取消"
+                @confirm="userRemove(record.id)"
+              >
+                <a-button class="user_action delete" type="danger">删除</a-button>
+              </a-popconfirm>
+            </template>
           </template>
-          <template v-if="column.key === 'created_at'">
-            <span>{{ dateTransition(record.created_at) }}</span>
-          </template>
-          <template v-if="column.key === 'action'">
-            <a-button class="user_action update" @click="EditModel(record)" type="primary">编辑</a-button>
-            <a-popconfirm
-              title="是否确认删除？"
-              ok-text="删除"
-              cancel-text="取消"
-              @confirm="userRemove(record.id)"
-            >
-              <a-button class="user_action delete" type="danger">删除</a-button>
-            </a-popconfirm>
-          </template>
-        </template>
-      </a-table>
-    </div>
+        </a-table>
+      </div>
+    </a-spin>
     <!-- pages 用于展示分页 -->
     <div class="pages">
        <a-pagination
@@ -162,6 +167,7 @@ const idList = reactive({
 const page = reactive({
   page_num: 1,
   page_size: 5,
+  key: "",
 })
 
 // 用于置空
@@ -230,7 +236,8 @@ const data = reactive({
       age: "18",
       tel: "136****0045",
       email: "e****@gmail.com",
-      user_type: "管理员"
+      user_type: "管理员",
+      role_id: 3,
     }
   ],
   selectedRowKeys: [],
@@ -238,13 +245,14 @@ const data = reactive({
   AddModalVisible: false, // 对话框是否可见
   EditModalVisible: false,
   updateID: 0,
+  spinning: true, // 默认是在加载中
 })
 
 function onSelectChange(selectedKeys) {
   data.selectedRowKeys = selectedKeys
 }
 
-async function handleOk() {
+async function AddUser() {
   try {
     // 主动触发验证
     await formRef.value.validate()
@@ -280,11 +288,13 @@ let validatePassword = async (_rule, value) => {
 
 async function getUserList() {
   // 在这里获取用户列表并且将用户数据存入data.list中
+  data.spinning = true
   let store = AdminInfoStore()
   store.loadAdminInfo()
   let res = await userListApi(page)
   data.list = res.data.data_list
   data.count = res.data.count
+  data.spinning = false
 }
 getUserList()
 
@@ -353,7 +363,7 @@ async function usersRemove() {
 function EditModel(record) {
   EditFormState.user_id = record.id
   data.EditModalVisible = true
-  EditFormState.user_type = record.user_type
+  EditFormState.user_type = record.role_id
   EditFormState.age = record.age
   EditFormState.email = record.email
   EditFormState.tel = record.tel
@@ -368,8 +378,20 @@ async function EditUser() {
     message.success(res.msg)
     getUserList()
   }
+  data.EditModalVisible = false
 }
 
+// 刷新用户列表页面
+function refresh() {
+  message.success("刷新成功")
+  getUserList()
+}
+
+function onSearch() {
+  page.key = page.key.trim()
+  page.page_num = 1
+  getUserList()
+}
 
 </script>
 
@@ -380,6 +402,13 @@ async function EditUser() {
   .search_box {
     padding: 10px;
     border-bottom: 1px solid #e8e6ff;
+    position: relative;
+
+    .user_list_refresh {
+      position: absolute;
+      right: 10px;
+      top: 10px;
+    }
   }
 
   .actions {
