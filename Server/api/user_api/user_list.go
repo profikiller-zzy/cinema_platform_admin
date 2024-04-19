@@ -22,14 +22,14 @@ type UserResponse struct {
 
 type UserListRequest struct {
 	model.PageInfo
-	Role int `json:"role" form:"role"`
+	UserType int `json:"user_type" form:"user_type"`
 }
 
 // UserListView 为管理员返回全部用户信息
 func (UserApi) UserListView(c *gin.Context) {
 	_claims, _ := c.Get("claims")
 	claims := _claims.(*jwts.CustomClaims)
-	var pageModel model.PageInfo
+	var pageModel UserListRequest
 	err := c.ShouldBindQuery(&pageModel)
 	if err != nil {
 		response.FailWithCode(response.ParameterError, c)
@@ -39,9 +39,9 @@ func (UserApi) UserListView(c *gin.Context) {
 	var userList = make([]model.User, 0)
 	var count int64
 	// 对用户列表进行分页
-	userList, count, err = common_service.PagingList(model.User{}, common_service.PageInfoDebug{
-		PageInfo: pageModel,
-		Debug:    true,
+	userList, count, err = common_service.PagingList(model.User{UserType: ctype.Role(pageModel.UserType)}, common_service.Option{
+		PageInfo: pageModel.PageInfo,
+		Likes:    []string{"user_name"},
 	})
 
 	for _, user := range userList {

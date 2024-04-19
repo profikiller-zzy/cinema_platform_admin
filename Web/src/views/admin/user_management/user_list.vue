@@ -92,6 +92,16 @@
       <div class="user_list_refresh">
         <a-button @click="refresh"><i class="iconfont icon-shuaxin"></i></a-button>
       </div>
+      <a-select
+          class="user_list_select"
+          placeholder="选择权限"
+          ref="select"
+          v-model:value="page.user_type"
+          style="width: 200px"
+          :options="roleOptions"
+          @change="changeUserType"
+      >
+      </a-select>
     </div>
     <!-- actions 主要是一些定义行为的按钮 -->
     <div class="actions">
@@ -168,6 +178,7 @@ const page = reactive({
   page_num: 1,
   page_size: 5,
   key: "",
+  user_type: undefined,
 })
 
 // 用于置空
@@ -393,6 +404,11 @@ function onSearch() {
   getUserList()
 }
 
+function changeUserType() {
+  console.log(page)
+  onSearch()
+}
+
 </script>
 
 <style lang="scss">
@@ -403,6 +419,10 @@ function onSearch() {
     padding: 10px;
     border-bottom: 1px solid #e8e6ff;
     position: relative;
+
+    .user_list_select {
+      margin-left: 10px;
+    }
 
     .user_list_refresh {
       position: absolute;
@@ -420,7 +440,7 @@ function onSearch() {
   }
 
   .tables {
-    padding: 10px;
+    padding: 0 10px 10px 10px;
 
     .user_avatar {
       width: 50px;

@@ -3,8 +3,16 @@ package common_service
 import (
 	"AfterEnd/global"
 	"AfterEnd/model"
+	"fmt"
 	"gorm.io/gorm"
 )
+
+type Option struct {
+	model.PageInfo
+	Debug   bool
+	Likes   []string // 模糊匹配的字段
+	Preload []string // 预加载的列表
+}
 
 type PageInfoDebug struct {
 	model.PageInfo
@@ -12,36 +20,35 @@ type PageInfoDebug struct {
 }
 
 // PagingList 对不同数据模型的数据项进行分页，返回指定页的所有数据和所有数据项的数量
-func PagingList[T any](model T, debug PageInfoDebug) (list []T, count int64, err error) {
-	// 对数据模型列表进行分页
-	db := global.Db
-	debug.Debug = true
-	if debug.Debug {
-		db = global.Db.Session(&gorm.Session{Logger: global.MysqlLog})
+func PagingList[T any](model T, option Option) (list []T, count int64, err error) {
+
+	DB := global.Db
+	if option.Debug {
+		DB = global.Db.Session(&gorm.Session{Logger: global.MysqlLog})
 	}
-	var offset int
-	// 使用到model T入参中携带的条件参数
-	// 假如没有关键字
-	if debug.Key == "" {
-		count = db.Where(model).Select("id").Find(&list).RowsAffected
-	} else { // 前端携带了关键字
-		count = db.Where(model).Where("user_name LIKE ?", "%"+debug.Key+"%").Select("id").Find(&list).RowsAffected
+	if option.Sort == "" {
+		option.Sort = "created_at desc" // 默认按照时间往前排
+	}
+	DB = DB.Where(model)
+	for index, column := range option.Likes {
+		if index == 0 {
+			DB.Where(fmt.Sprintf("%s like ?", column), fmt.Sprintf("%%%s%%", option.Key))
+			continue
+		}
+		DB.Or(fmt.Sprintf("%s like ?", column), fmt.Sprintf("%%%s%%", option.Key))
 	}
 
-	if debug.PageNum == 0 {
+	count = DB.Where(model).Find(&list).RowsAffected
+	// 这里的query会受上面查询的影响，需要手动复位
+	query := DB.Where(model)
+	for _, preload := range option.Preload {
+		query = query.Preload(preload)
+	}
+	offset := (option.PageNum - 1) * option.PageSize
+	if offset < 0 {
 		offset = 0
-	} else {
-		offset = (debug.PageNum - 1) * debug.PageSize
 	}
+	err = query.Limit(option.PageSize).Offset(offset).Order(option.Sort).Find(&list).Error
 
-	if debug.Sort == "" { // 默认按照创建时间从新到旧排
-		debug.Sort = "created_at desc"
-	}
-
-	if debug.Key == "" {
-		err = db.Where(model).Limit(debug.PageSize).Offset(offset).Order(debug.Sort).Find(&list).Error
-	} else {
-		err = db.Model(&model).Where("user_name LIKE ?", "%"+debug.Key+"%").Limit(debug.PageSize).Offset(offset).Order(debug.Sort).Find(&list).Error
-	}
 	return list, count, err
 }
