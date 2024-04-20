@@ -24,19 +24,14 @@ const router = createRouter({
                         component : ()=>import("@/views/admin/home/admin_home.vue")
                     },
                     {
-                        path :"user_create",
-                        name :"user_create",
-                        component : ()=>import("@/views/admin/user_management/user_create.vue")
-                    },
-                    {
                         path :"user_list",
                         name :"user_list",
                         component : ()=>import("@/views/admin/user_management/user_list.vue")
                     },
                     {
-                        path :"user_query",
-                        name :"user_query",
-                        component : ()=>import("@/views/admin/user_management/user_query.vue")
+                        path :"movie_list",
+                        name :"movie_list",
+                        component : ()=>import("@/views/admin/movie_management/movie_list.vue")
                     },
                 ]
             }

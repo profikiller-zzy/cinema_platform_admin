@@ -29,6 +29,7 @@ func InitRouter() *gin.Engine {
 	apiGroupApp.UserRouter()
 	apiGroupApp.CinemaRouter()
 	apiGroupApp.ImageRouter()
+	apiGroupApp.MoiveRouter()
 
 	return router
 }

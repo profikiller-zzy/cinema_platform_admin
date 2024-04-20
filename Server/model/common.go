@@ -15,6 +15,7 @@ type RemoveRequest struct {
 
 // FileUploadResponse 对图片文件上传的响应结构体
 type FileUploadResponse struct {
+	PictureID uint   `json:"picture_id"` // 图片入库的图片ID
 	FilePath  string `json:"file_path"`  // 图片上传成功则返回图片文件路径(本地路径或是URL)，上传失败返回上传文件的名称
 	IsSuccess bool   `json:"is_success"` // 是否上传成功
 	Msg       string `json:"msg"`        // 返回信息，如果上传失败则这个字段会返回错误信息

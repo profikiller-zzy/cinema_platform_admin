@@ -6,5 +6,5 @@ import (
 
 func (r RGroup) ImageRouter() {
 	imageApiApp := api.ApiGroupApp.ImageApi
-	r.POST("image_upload", imageApiApp.ImageUploadingView)
+	r.POST("/image_upload/", imageApiApp.ImageUploadingView)
 }

@@ -38,13 +38,13 @@ func (ImageService) ImageUploadService(FileHeader *multipart.FileHeader, c *gin.
 
 	// 如果用户上传的文件不在白名单中，则直接判断下一个文件
 	if !utils.IsInStringList(ext, ImageWhiteList) {
-		req = GenerateFileUploadReq(fileName, false, fmt.Sprintf("上传文件类型错误，当前文件后缀为%s", ext))
+		req = GenerateFileUploadReq(0, fileName, false, fmt.Sprintf("上传文件类型错误，当前文件后缀为%s", ext))
 		return req
 	}
 
 	// 判断文件大小是否大于指定最大文件大小，大于则直接判断下一个文件
 	if FileHeader.Size > (size << 20) {
-		req = GenerateFileUploadReq(fileName, false, fmt.Sprintf("上传图片大小大于设定大小，设定大小为 %d MB，当前图片大小为 %.3f MB", size, float64(FileHeader.Size)/(2<<20)))
+		req = GenerateFileUploadReq(0, fileName, false, fmt.Sprintf("上传图片大小大于设定大小，设定大小为 %d MB，当前图片大小为 %.3f MB", size, float64(FileHeader.Size)/(2<<20)))
 		return req
 	}
 
@@ -59,18 +59,18 @@ func (ImageService) ImageUploadService(FileHeader *multipart.FileHeader, c *gin.
 	imageHash := utils.MD5(fileObjContent)
 
 	// 去数据库中查询该数据是否存在，若存在则直接下一个文件，不存在则上传和入库
-	fmt.Println(imageHash)
+	//fmt.Println(imageHash)
 	var photo model.ProfilePhoto
 	result := global.Db.Where("hash = ?", imageHash).First(&photo)
 	if result.Error != nil {
 		if !errors.Is(result.Error, gorm.ErrRecordNotFound) {
 			// 查询数据库出错，返回错误信息
-			return GenerateFileUploadReq(fileName, false, fmt.Sprintf("查询数据库出错: %v", result.Error))
+			return GenerateFileUploadReq(0, fileName, false, fmt.Sprintf("查询数据库出错: %v", result.Error))
 		}
 		// 数据库中不存在该图片，继续上传
 	} else {
 		// 数据库中存在该图片，直接返回图片已存在的信息
-		return GenerateFileUploadReq(photo.Path, false, "图片已存在")
+		return GenerateFileUploadReq(photo.ID, photo.Path, false, "图片已存在")
 	}
 
 	// 上传图片文件至七牛云存储空间
@@ -85,7 +85,7 @@ func (ImageService) ImageUploadService(FileHeader *multipart.FileHeader, c *gin.
 		} else {
 			msg = fmt.Sprintf("上传图片保存到本地失败，错误信息:%s", err.Error())
 		}
-		req = GenerateFileUploadReq(fileName, false, msg)
+		req = GenerateFileUploadReq(0, fileName, false, msg)
 		return req
 	} else { // 图片已经上传成功
 		// 将上传的图片记录存入数据库
@@ -100,10 +100,12 @@ func (ImageService) ImageUploadService(FileHeader *multipart.FileHeader, c *gin.
 			global.Log.Error(fmt.Sprintf("图片文件写入数据库出错，报错信息:%s", err.Error()))
 		}
 
+		var pictureID uint
 		var msg string
+		pictureID = image.ID
 		msg = fmt.Sprintf("图片上传七牛云服务器成功，当前图片大小为 %.3f MB", float64(FileHeader.Size)/(2<<20))
 		// 为每个图片文件构造返回信息
-		req = GenerateFileUploadReq(fileURL, true, msg)
+		req = GenerateFileUploadReq(pictureID, fileURL, true, msg)
 		err = fileObj.Close()
 		if err != nil {
 			global.Log.Warn(fmt.Sprintf("文件关闭失败，报错信息:%s", err.Error()))
@@ -112,8 +114,9 @@ func (ImageService) ImageUploadService(FileHeader *multipart.FileHeader, c *gin.
 	}
 }
 
-func GenerateFileUploadReq(filePath string, isSuccess bool, msg string) (req model.FileUploadResponse) {
+func GenerateFileUploadReq(pictureID uint, filePath string, isSuccess bool, msg string) (req model.FileUploadResponse) {
 	return model.FileUploadResponse{
+		PictureID: pictureID,
 		FilePath:  filePath,
 		IsSuccess: isSuccess,
 		Msg:       msg,
