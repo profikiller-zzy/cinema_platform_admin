@@ -10,15 +10,15 @@ import (
 	"time"
 )
 
-type MovieCreateRequest struct {
-	MovieName string `json:"movie_name" binding:"required" msg:"请输入电影名称"` // 电影的名字
-	//CoverPictureID  uint          `json:"banner_id" structs:"banner_id"`   // 文章封面id
-	//CoverPictureUrl string        `json:"banner_url" structs:"banner_url"` // 电影封面的存储地址
-	ReleaseDate time.Time     `json:"release_date" binding:"required" msg:"请输入上映时间"` // 上映时间
-	PlayTime    time.Duration `json:"play_time" binding:"required" msg:"请输入电影时长"`    // 电影的时长
-	Director    string        `json:"director" binding:"required" msg:"请输入电影导演"`     // 电影的导演
-	Actors      string        `json:"actors" binding:"required" msg:"请输入电影演员"`       // 电影的演员
-}
+//type MovieCreateRequest struct {
+//	MovieName string `json:"movie_name" binding:"required" msg:"请输入电影名称"` // 电影的名字
+//	//CoverPictureID  uint          `json:"banner_id" structs:"banner_id"`   // 文章封面id
+//	//CoverPictureUrl string        `json:"banner_url" structs:"banner_url"` // 电影封面的存储地址
+//	ReleaseDate time.Time     `json:"release_date" binding:"required" msg:"请输入上映时间"` // 上映时间
+//	PlayTime    time.Duration `json:"play_time" binding:"required" msg:"请输入电影时长"`    // 电影的时长
+//	Director    string        `json:"director" binding:"required" msg:"请输入电影导演"`     // 电影的导演
+//	Actors      string        `json:"actors" binding:"required" msg:"请输入电影演员"`       // 电影的演员
+//}
 
 func (MovieApi) MovieCreateView(c *gin.Context) {
 	// 获取上传的封面图片
