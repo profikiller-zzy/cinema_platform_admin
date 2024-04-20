@@ -10,12 +10,12 @@ import (
 
 type MovieResponse struct {
 	model.MODEL
-	MovieName       string        `json:"movie_name"`                      // 电影的名字
-	CoverPictureUrl string        `json:"banner_url" structs:"banner_url"` // 电影封面的存储地址
-	ReleaseDate     time.Time     `json:"release_date"`                    // 上映时间
-	PlayTime        time.Duration `json:"play_time"`                       // 电影的时长
-	Director        string        `json:"director"`                        // 电影的导演
-	Actors          string        `json:"actors"`                          // 该电影的演员
+	MovieName       string        `json:"movie_name"`                                    // 电影的名字
+	CoverPictureUrl string        `json:"cover_picture_url" structs:"cover_picture_url"` // 电影封面的存储地址
+	ReleaseDate     time.Time     `json:"release_date"`                                  // 上映时间
+	PlayTime        time.Duration `json:"play_time"`                                     // 电影的时长
+	Director        string        `json:"director"`                                      // 电影的导演
+	Actors          string        `json:"actors"`                                        // 该电影的演员
 }
 
 type MovieListRequest struct {

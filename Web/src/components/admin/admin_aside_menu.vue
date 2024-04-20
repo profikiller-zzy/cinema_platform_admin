@@ -58,18 +58,20 @@ const data = reactive({
           title: "用户列表",
           name: "user_list",
         },
-        // {
-        //   id: "4",
-        //   icon: "iconfont icon-tianjiayonghu",
-        //   title: "添加用户",
-        //   name: "user_create",
-        // },
-        // {
-        //   id: "5",
-        //   icon: "iconfont icon-yonghuchaxun",
-        //   title: "用户查询",
-        //   name: "user_query",
-        // }
+      ]
+    },
+    {
+      id: "4",
+      icon: "iconfont icon-dianyingziyuan", // 图标名称
+      title: "电影管理",          // 菜单标题
+      name: "",                  // 用户管理不会跳转路由，所以这里直接为空
+      children: [
+        {
+          id: "5",
+          icon: "iconfont icon-liebiao",
+          title: "电影列表",
+          name: "movie_list",
+        },
       ]
     },
   ]

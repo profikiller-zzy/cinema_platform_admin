@@ -114,7 +114,7 @@
 <script setup>
 import AdminTable from "@/components/admin/admin_table.vue";
 import {reactive, ref} from "vue";
-import {userListApi, userCreateApi, userEditApi} from "@/api/user_management_api.js";
+import { userCreateApi, userEditApi} from "@/api/user_management_api.js";
 import {message} from "ant-design-vue";
 import {AdminInfoStore} from "@/stores/admin_info.js";
 
@@ -199,7 +199,7 @@ const data = reactive({
 function EditModel(record) {
   data.EditModalVisible = true
   EditFormState.user_id = record.id
-  EditFormState.user_type = record.role_id
+  EditFormState.user_type = record.user_type
   EditFormState.age = record.age
   EditFormState.email = record.email
   EditFormState.tel = record.tel

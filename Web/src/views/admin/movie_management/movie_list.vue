@@ -1,6 +1,6 @@
 <template>
   <div>
-    <a-modal v-model:visible="data.AddModalVisible" title="添加用户" @ok="AddUser">
+    <a-modal v-model:visible="data.AddModalVisible" title="添加电影" @ok="AddMovie">
       <a-form
         :model="formState"
         name="basic"
@@ -9,43 +9,42 @@
         :wrapper-col="{ span: 20 }"
         autocomplete="off"
       >
-        <a-form-item has-feedback label="用户名" name="user_name"
-                   :rules="[{ required: true, message: '请输入用户名!', trigger: 'blur' }]">
-          <a-input v-model:value="formState.user_name" placeholder="用户名"/>
+         <template>
+          <a-upload
+            action="https://www.mocky.io/v2/5cc8019d300000980a055e76"
+            :multiple="false"
+            :file-list="formState.pictureFile"
+            @change="handleChange"
+          >
+            <a-button>
+              <upload-outlined></upload-outlined>
+              上传电影封面
+            </a-button>
+          </a-upload>
+        </template>
+        <a-form-item has-feedback label="电影名称" name="movie_name"
+                 :rules="[{ required: true, message: '请输入电影名称!', trigger: 'blur' }]">
+        <a-input v-model:value="formState.movie_name" placeholder="电影名"/>
         </a-form-item>
-        <a-form-item has-feedback label="密码" name="password"
-                   :rules="[{ required: true, message: '请输入密码!', trigger: 'blur' }]">
-          <a-input-password v-model:value="formState.password" placeholder="密码"/>
+        <a-form-item has-feedback label="上映时间" name="release_date"
+                   :rules="[{ required: true, message: '请输入上映时间!', trigger: 'blur' }]">
+          <a-input-password v-model:value="formState.release_date" placeholder="上映时间"/>
         </a-form-item>
-        <a-form-item has-feedback label="确认密码" name="re_password"
-                   :rules="[{ required: true, message: '请再次输入密码!' },
-                   {validator: validatePassword, trigger: 'change'}]">
-          <a-input-password v-model:value="formState.re_password" placeholder="确认密码"/>
+        <a-form-item has-feedback label="电影时长" name="play_time"
+                     :rules="[{ required: true, message: '请输入电影时长', trigger: 'blur' }]">
+            <a-input v-model:value="formState.play_time" placeholder="电影时长"/>
         </a-form-item>
-        <a-form-item label="权限" name="role" :rules="[{ required: true, message: '请选择权限!' }]">
-            <a-select
-                    ref="select"
-                    v-model:value="formState.role"
-                    style="width: 200px"
-                    :options="roleOptions"
-            >
-            </a-select>
+        <a-form-item has-feedback label="导演" name="director"
+                   :rules="[{ required: true, message: '请输入导演!', trigger: 'blur' }]">
+          <a-input v-model:value="formState.director" placeholder="导演"/>
         </a-form-item>
-        <a-form-item has-feedback label="年龄" name="age"
-                     :rules="[{ required: false, message: '请输入年龄', trigger: 'blur' }]">
-            <a-input v-model:value="formState.age" placeholder="年龄"/>
-        </a-form-item>
-        <a-form-item has-feedback label="邮箱" name="user_name"
-                   :rules="[{ required: false, message: '请输入邮箱!', trigger: 'blur' }]">
-          <a-input v-model:value="formState.email" placeholder="邮箱"/>
-        </a-form-item>
-        <a-form-item has-feedback label="电话号码" name="user_name"
-                   :rules="[{ required: false, message: '请输入电话号码!', trigger: 'blur' }]">
-          <a-input v-model:value="formState.tel" placeholder="电话号码"/>
+        <a-form-item has-feedback label="演员" name="actors"
+                   :rules="[{ required: true, message: '请输入演员!', trigger: 'blur' }]">
+          <a-input v-model:value="formState.actors" placeholder="演员"/>
         </a-form-item>
       </a-form>
     </a-modal>
-    <a-modal v-model:visible="data.EditModalVisible" title="编辑用户" @ok="EditUser">
+    <a-modal v-model:visible="data.EditModalVisible" title="编辑电影" @ok="EditMovie">
       <a-form
         :model="EditFormState"
         name="basic"
@@ -54,26 +53,29 @@
         :wrapper-col="{ span: 20 }"
         autocomplete="off"
       >
-        <a-form-item label="权限" name="role" :rules="[{ required: true, message: '请选择权限!' }]">
-            <a-select
-                    ref="select"
-                    v-model:value="EditFormState.user_type"
-                    style="width: 200px"
-                    :options="roleOptions"
-            >
-            </a-select>
+        <a-form-item has-feedback label="电影名称" name="movie_name"
+                 :rules="[{ required: true, message: '请输入电影名称!', trigger: 'blur' }]">
+        <a-input v-model:value="EditFormState.movie_name" placeholder="电影名"/>
         </a-form-item>
-        <a-form-item has-feedback label="年龄" name="age"
-                     :rules="[{ required: false, message: '请输入年龄', trigger: 'blur' }]">
-            <a-input v-model:value="EditFormState.age" placeholder="年龄"/>
+        <a-form-item has-feedback label="上映时间" name="release_date"
+            :rules="[{ required: true, message: '请选择上映时间!', trigger: 'blur' }]">
+            <a-date-picker
+                v-model:value="EditFormState.release_date"
+                :placeholder="EditFormState.release_date ? EditFormState.release_date.format('YYYY-MM-DD HH:mm') : '选择上映时间'"
+                @change="handleDateChange"
+            />
         </a-form-item>
-        <a-form-item has-feedback label="邮箱" name="user_name"
-                   :rules="[{ required: false, message: '请输入邮箱!', trigger: 'blur' }]">
-          <a-input v-model:value="EditFormState.email" placeholder="邮箱"/>
+        <a-form-item has-feedback label="电影时长" name="play_time"
+                     :rules="[{ required: true, message: '请输入电影时长', trigger: 'blur' }]">
+            <a-input v-model:value="EditFormState.play_time" placeholder="电影时长"/>
         </a-form-item>
-        <a-form-item has-feedback label="电话号码" name="user_name"
-                   :rules="[{ required: false, message: '请输入电话号码!', trigger: 'blur' }]">
-          <a-input v-model:value="EditFormState.tel" placeholder="电话号码"/>
+        <a-form-item has-feedback label="导演" name="director"
+                   :rules="[{ required: true, message: '请输入导演!', trigger: 'blur' }]">
+          <a-input v-model:value="EditFormState.director" placeholder="导演"/>
+        </a-form-item>
+        <a-form-item has-feedback label="演员" name="actors"
+                   :rules="[{ required: true, message: '请输入演员!', trigger: 'blur' }]">
+          <a-input v-model:value="EditFormState.actors" placeholder="演员"/>
         </a-form-item>
       </a-form>
     </a-modal>
@@ -83,16 +85,22 @@
         base-url="/api/movies"
         ref="adminTable"
         like-title="搜索电影名称"
-        is-delete is-add>
+        is-delete is-add is-edit>
       <template #add>
-        <a-button type="primary" @click="data.AddModalVisible = true">添加</a-button>
+        <a-button type="primary" @click="data.AddModalVisible = true">添加电影</a-button>
       </template>
       <template #edit="{record}">
         <a-button class="user_action update" @click="EditModel(record)" type="primary">编辑</a-button>
       </template>
       <template #cell="{ column, record }">
-        <template v-if="column.key === 'avatar_url'">
-          <img class="user_avatar" :src="record.avatar_url">
+        <template v-if="column.key === 'cover_picture_url'">
+          <img class="cover_picture" :src="record.cover_picture_url">
+        </template>
+        <template v-if="column.key === 'play_time'">
+          <span>{{ durationTransition(record.play_time) }}</span>
+        </template>
+        <template v-if="column.key === 'release_date'">
+          <span>{{ dateTransition(record.release_date, 1) }}</span>
         </template>
       </template>
     </AdminTable>
@@ -100,97 +108,131 @@
 </template>
 
 <script setup>
+import dayjs from 'dayjs';
 import AdminTable from "@/components/admin/admin_table.vue";
 import {reactive, ref} from "vue";
-import {userListApi, userCreateApi, userEditApi} from "@/api/user_management_api.js";
+import {movieCreateApi, movieEditApi} from "@/api/movie_management_api.js";
+import cloneDeep from 'lodash/cloneDeep';
+import {durationToNanoseconds, durationTransition} from "@/utils/durationTransition.js";
 import {message} from "ant-design-vue";
-import {AdminInfoStore} from "@/stores/admin_info.js";
+import {dateTransition} from "../../../utils/dateTransition.js";
 
 // 对话框中规则验证
 const formRef = ref({})
 const adminTable = ref(null)
-// 权限映射
-const roleOptions = [
-  {
-    value: 1,
-    label: "系统管理员"
-  },
-  {
-    value: 2,
-    label: "影院用户"
-  },
-  {
-    value: 3,
-    label: "普通用户"
-  },
-]
-// 密码校验，验证两次输入的密码是否一致
-let validatePassword = async (_rule, value) => {
-  if (value === "") {
-    return Promise.reject("");
-  } else if (value !== formState.password) {
-    return Promise.reject("两次密码不一致!");
-  } else {
-    return Promise.resolve();
-  }
-}
+
 // 用于置空formState
 const _formState = {
-  user_name: "",
-  password: "",
-  re_password: "",
-  role: undefined,
-  age: "",
-  email: "",
-  tel: "",
+  movie_name: "",
+  release_date: "",
+  play_time: "",
+  director: "",
+  actors: "",
+  pictureFile: []
 }
-// 表单信息
-const formState = reactive({
-  user_name: "",
-  password: "",
-  re_password: "",
-  role: undefined,
-  age: "",
-  email: "",
-  tel: "",
+// formState 表单信息，用于添加电影信息
+let formState = reactive({
+  movie_name: "",
+  release_date: "",
+  play_time: "",
+  director: "",
+  actors: "",
+  pictureFile: []
 })
-const EditFormState = reactive({
-  user_type: undefined,
-  age: "",
-  tel: "",
-  email: "",
-  user_id: 23
+
+// EditFormState 表单信息，用于编辑电影信息
+let EditFormState = reactive({
+  movie_name: "",
+  release_date: "",
+  play_time: "",
+  director: "",
+  actors: "",
+  movie_id: 0,
 })
-const filter = ref(undefined)
-function OnFilter() {
-  adminTable.value.ExportList({
-    user_type: filter.value
-  })
-}
 
 const data = reactive({
   AddModalVisible: false, // 对话框是否可见
   EditModalVisible: false,
   columns: [
-    {title: '用户ID', dataIndex: 'id', key: 'id',},
-    {title: '用户名', dataIndex: 'user_name', key: 'user_name',},
-    {title: '头像', dataIndex: 'avatar_url', key: 'avatar_url',},
-    {title: '年龄', dataIndex: 'age', key: 'age',},
-    {title: '电话号码', dataIndex: 'tel', key: 'tel',},
-    {title: '邮箱', dataIndex: 'email', key: 'email',},
-    {title: '用户类型', dataIndex: 'user_type', key: 'user_type',},
-    {title: '注册时间', dataIndex: 'created_at', key: 'created_at',},
+    {title: '电影ID', dataIndex: 'id', key: 'id',},
+    {title: '电影名', dataIndex: 'movie_name', key: 'movie_name',},
+    {title: '上传时间', dataIndex: 'created_at', key: 'created_at',},
+    {title: '电影封面', dataIndex: 'cover_picture_url', key: 'cover_picture_url',},
+    {title: '上映时间', dataIndex: 'release_date', key: 'release_date',},
+    {title: '电影时长', dataIndex: 'play_time', key: 'play_time',},
+    {title: '导演', dataIndex: 'director', key: 'director',},
+    {title: '演员', dataIndex: 'actors', key: 'actors',},
     {title: '操作', dataIndex: 'action', key: 'action',},
   ],
 })
 
+function handleChange(info) {
+  let fileList = [...info.fileList]; // 拷贝一份文件列表
+
+  // 限制文件上传数量
+  fileList = fileList.slice(-1);
+
+  // 将文件列表保存到组件状态中
+  this.fileList = fileList;
+
+  // 检查上传状态
+  if (info.file.status === 'done') {
+    this.$message.success(`${info.file.name} 文件上传成功`);
+  } else if (info.file.status === 'error') {
+    this.$message.error(`${info.file.name} 文件上传失败`);
+  }
+}
+
+// 点击编辑按钮触发的事件
 function EditModel(record) {
   data.EditModalVisible = true
-  EditFormState.user_id = record.id
-  EditFormState.user_type = record.role_id
-  EditFormState.age = record.age
-  EditFormState.email = record.email
-  EditFormState.tel = record.tel
+  EditFormState.movie_id = record.id
+  EditFormState.movie_name = record.movie_name
+  EditFormState.release_date = dayjs(record.release_date)
+  EditFormState.play_time = durationTransition(record.play_time)
+  EditFormState.director = record.director
+  EditFormState.actors = record.actors
+  console.log(EditFormState)
+}
+
+// 编辑电影
+async function EditMovie() {
+  // EditFormStateRequest用于向后端请求，而EditFormState用于和前端的表单信息双向绑定
+  // 这样不会打乱前端展示格式的同时，还能向后端发送满足后端请求格式的数据
+  // 先对 EditFormState 进行深拷贝
+  const EditFormStateRequest = cloneDeep(EditFormState);
+
+  // 将 EditFormStateRequest.release_date 转换为时间字符串
+  const formattedDate = dayjs(EditFormState.release_date).format('YYYY-MM-DDTHH:mm:ss[Z]');
+  // 将格式化后的时间字符串重新赋值给 EditFormStateRequest.release_date
+  EditFormStateRequest.release_date = formattedDate;
+
+  // 将 EditFormState.play_time 转换为纳秒数
+  const formatterDuration = durationToNanoseconds(EditFormState.play_time);
+  EditFormStateRequest.play_time = formatterDuration;
+
+  try {
+    // 发送请求到后端
+    let res = await movieEditApi(EditFormStateRequest);
+    if (res.code) {
+      // 处理错误消息
+      message.error(res.msg);
+    } else {
+      // 处理成功消息
+      message.success(res.msg);
+      // 关闭编辑对话框
+      data.EditModalVisible = false;
+    }
+  } catch (error) {
+    // 处理请求失败的情况
+    console.error("Error:", error);
+    // 显示错误提示
+    message.error("请求失败");
+  }
+}
+
+function handleDateChange(value) {
+    formState.release_date = value;
 }
 
 function movieRemove(user_id) {
@@ -198,45 +240,34 @@ function movieRemove(user_id) {
 }
 
 // 创建用户
-async function AddUser() {
+async function AddMovie() {
   try {
     // 主动触发验证
     await formRef.value.validate()
-    // console.log(formState)
-    let res = await userCreateApi(formState)
+    let res = await movieCreateApi(formState)
     if (res.code) {
         message.error(res.msg)
         return
     }
     message.success(res.msg)
     data.AddModalVisible = false
-    // await getUserList()
     // 置空
     Object.assign(formState, _formState)
     // // 清除验证规则
-    // formRef.value.clearValidate()
-    // GvbList.value.ExposeList()
   } catch (e) {
     console.log(e)
   }
 }
 
-// 编辑用户
-async function EditUser() {
-  let res = await userEditApi(EditFormState)
-  if (res.code) {
-    message.error(res.msg)
-    return
-  } else {
-    message.success(res.msg)
-    // getUserList()
-  }
-  data.EditModalVisible = false
-}
-// getUserList()
-
 </script>
 
 <style lang="scss">
+.cover_picture {
+  width: 200px;
+}
+
+.cover_picture_upload {
+  margin-bottom: 10px;
+}
 
 </style>

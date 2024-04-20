@@ -36,22 +36,9 @@
 </template>
 
 <script setup>
-import {useRouter} from "vue-router";
 import Admin_aside from "@/components/admin/admin_aside.vue";
 import Admin_info from "@/components/admin/admin_info.vue";
 
-const route = useRouter()
-
-function onClick({key}) {
-  if (key === "user"){
-    router.push({
-      name:"login"
-    })
-  }
-  else if (key === "approval") {
-    console.log("approval")
-  }
-}
 </script>
 
 <style lang="scss">
@@ -77,9 +64,6 @@ function onClick({key}) {
       display: flex;
       justify-content: space-between;
       align-items: center; // 排列在当前列的中间位置
-
-      .header_left {
-      }
 
       .header_right {
         display: flex;

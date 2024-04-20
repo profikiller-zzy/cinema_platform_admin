@@ -1,4 +1,5 @@
-export function dateTransition(timestamp) {
+import dayjs from 'dayjs';
+export function dateTransition(timestamp, type) {
     // 后端获取到的时间戳为 timestamp
     // 创建一个新的 Date 对象，并将时间戳作为参数传入
     const date = new Date(timestamp);
@@ -11,8 +12,12 @@ export function dateTransition(timestamp) {
     const minutes = date.getMinutes().toString().padStart(2, "0"); // 补零
 
     // 将年月日时分拼接成字符串
-    const formattedDateTime = `${year}-${month}-${day} ${hours}:${minutes}`;
-
-    // 输出格式化后的日期时间字符串
-    return formattedDateTime
+    if (type === 0) {
+        const formattedDateTime = `${year}-${month}-${day} ${hours}:${minutes}`;
+        return formattedDateTime
+    } else {
+        const formattedDateTime = `${year}-${month}-${day}`;
+        // 输出格式化后的日期时间字符串
+        return formattedDateTime
+    }
 }

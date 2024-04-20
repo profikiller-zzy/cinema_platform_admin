@@ -15,7 +15,7 @@
       </slot>
 
       <div class="user_list_refresh">
-        <a-button @click="refresh"><i class="iconfont icon-shuaxin"></i></a-button>
+        <a-button @click="Refresh"><i class="iconfont icon-shuaxin"></i></a-button>
       </div>
     </div>
     <!-- actions 主要是一些定义行为的按钮 -->
@@ -48,7 +48,7 @@
           <template #bodyCell="{ column, record }">
             <slot name="cell" v-bind="{ column, record }">
               <template v-if="column.key === 'created_at'">
-                <span>{{ dateTransition(record.created_at) }}</span>
+                <span>{{ dateTransition(record.created_at, 0) }}</span>
               </template>
               <template v-if="column.key === 'action'">
                 <slot name="edit" v-bind="{column, record}">
@@ -167,17 +167,17 @@ async function batchRemove() {
       if (failedDeletes.length > 0) {
         // 输出失败删除的用户信息及原因
         // 显示错误提示
-        message.error("用户删除失败");
+        message.error("删除失败");
         failedDeletes.forEach(item => {
-          message.error(`用户 ${item.user_id} 删除失败: ${item.msg}`);
+          message.error(item.msg);
         });
       } else {
         // 所有用户删除成功的情况
-        message.success(`用户删除成功`);
+        message.success(`删除成功`);
       }
     } else {
       // 显示错误提示
-      message.error(res.msg || "删除用户失败");
+      message.error(res.msg);
     }
     getDataList(page);
     emits("delete", data.selectedRowKeys)
@@ -190,29 +190,26 @@ async function batchRemove() {
   }
 }
 
-async function sigleRemove(user_id) {
-try {
-    let res = await baseRemoveApi(props.baseUrl, [user_id]);
+async function sigleRemove(id) {
+  try {
+    let res = await baseRemoveApi(props.baseUrl, [id]);
     if (res.code === 0) {
-      const failedDeletes = res.data.filter(item => !item.is_success);
-      if (failedDeletes.length > 0) {
-        // 输出失败删除的用户信息及原因
-        // 显示错误提示
-        message.error("用户删除失败");
-        failedDeletes.forEach(item => {
-          message.error(`用户 ${item.user_id} 删除失败: ${item.msg}`);
-        });
-      } else {
-        // 所有用户删除成功的情况
-        message.success(`用户删除成功`);
-      }
+      res.data.forEach(item => {
+        if (item.is_success) {
+          // 打印成功消息
+          message.success(item.msg);
+        } else {
+          // 打印失败消息
+          message.error(item.msg);
+        }
+      });
     } else {
       // 显示错误提示
-      message.error(res.msg || "删除用户失败");
+      message.error(res.msg);
     }
     getDataList(page);
-    emits("delete", data.selectedRowKeys)
-    data.selectedRowKeys = []
+    emits("delete", data.selectedRowKeys);
+    data.selectedRowKeys = [];
   } catch (error) {
     // 处理请求失败的情况
     console.error("Error:", error);
@@ -222,7 +219,7 @@ try {
 }
 
 // 刷新用户列表页面
-function refresh() {
+function Refresh() {
   message.success("刷新成功")
   getDataList(page)
 }
@@ -233,11 +230,6 @@ function onSearch() {
   getDataList(page)
 }
 
-function changeUserType() {
-  console.log(page)
-  onSearch()
-}
-
 function ExportList(params) {
   page.page_num = 1
   Object.assign(page, params)
@@ -245,7 +237,8 @@ function ExportList(params) {
 }
 
 defineExpose({
-  ExportList
+  ExportList,
+  Refresh
 })
 
 </script>

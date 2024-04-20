@@ -10,12 +10,12 @@ import (
 )
 
 type MovieEditRequest struct {
-	MovieName   string    `json:"movie_name"`                                     // 电影的名字
-	ReleaseDate time.Time `json:"release_date"`                                   // 上映时间
-	PlayTime    string    `json:"play_time"`                                      // 电影的时长
-	Director    string    `json:"director"`                                       // 电影的导演
-	Actors      string    `json:"actors"`                                         // 该电影的演员
-	MovieID     uint      `json:"movie_id" binding:"required" msg:"请确认需要修改的电影ID"` // 需要修改的电影ID
+	MovieName   string        `json:"movie_name"`                                     // 电影的名字
+	ReleaseDate time.Time     `json:"release_date"`                                   // 上映时间
+	PlayTime    time.Duration `json:"play_time"`                                      // 电影的时长
+	Director    string        `json:"director"`                                       // 电影的导演
+	Actors      string        `json:"actors"`                                         // 该电影的演员
+	MovieID     uint          `json:"movie_id" binding:"required" msg:"请确认需要修改的电影ID"` // 需要修改的电影ID
 }
 
 // MovieEditView 编辑电影信息
@@ -35,14 +35,6 @@ func (MovieApi) MovieEditView(c *gin.Context) {
 		return
 	}
 
-	// 解析电影时长
-	playTime, err := time.ParseDuration(meReq.PlayTime)
-	if err != nil {
-		response.FailWithMessage("电影时长格式错误", c)
-		return
-	}
-
-	movieModel.PlayTime = playTime
 	err = global.Db.Model(&movieModel).Updates(map[string]interface{}{}).Error
 	if err != nil {
 		global.Log.Error(err.Error())
