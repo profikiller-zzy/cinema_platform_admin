@@ -1,4 +1,4 @@
-package user_api
+package movie_api
 
 import (
 	"AfterEnd/model"
@@ -7,8 +7,8 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-// UserRemoveView 这个函数目前还不完善，删除用户之前需要先将指定用户的全部依赖删除
-func (UserApi) UserRemoveView(c *gin.Context) {
+// MovieRemoveView 下架电影
+func (MovieApi) MovieRemoveView(c *gin.Context) {
 	var rmReq model.RemoveRequest
 	var count int64 = 0
 
@@ -18,14 +18,14 @@ func (UserApi) UserRemoveView(c *gin.Context) {
 		return
 	}
 
-	var umRes model.ListRemoveResponse
+	var mrRes model.ListRemoveResponse
 	var umResList []model.ListRemoveResponse = make([]model.ListRemoveResponse, len(rmReq.IDList))
-	for index, userID := range rmReq.IDList {
-		if err, umRes = model.SoftDeleteUser(userID); err == nil {
+	for index, movieID := range rmReq.IDList {
+		if err, mrRes = model.SoftDeleteMovie(movieID); err == nil {
 			count++
-			umResList[index] = umRes
+			umResList[index] = mrRes
 		} else {
-			umResList[index] = umRes
+			umResList[index] = mrRes
 		}
 	}
 

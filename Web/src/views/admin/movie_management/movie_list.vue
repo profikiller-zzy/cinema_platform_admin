@@ -78,11 +78,11 @@
       </a-form>
     </a-modal>
     <AdminTable
-        @delete="userRemove"
+        @delete="movieRemove"
         :columns="data.columns"
-        base-url="/api/users"
+        base-url="/api/movies"
         ref="adminTable"
-        like-title="搜索用户名"
+        like-title="搜索电影名称"
         is-delete is-add>
       <template #add>
         <a-button type="primary" @click="data.AddModalVisible = true">添加</a-button>
@@ -193,7 +193,7 @@ function EditModel(record) {
   EditFormState.tel = record.tel
 }
 
-function userRemove(user_id) {
+function movieRemove(user_id) {
   console.log(user_id)
 }
 

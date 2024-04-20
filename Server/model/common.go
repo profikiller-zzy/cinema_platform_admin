@@ -21,8 +21,8 @@ type FileUploadResponse struct {
 	Msg       string `json:"msg"`        // 返回信息，如果上传失败则这个字段会返回错误信息
 }
 
-// UserRemoveResponse 对用户删除的响应结构体
-type UserRemoveResponse struct {
+// ListRemoveResponse 对用户删除的响应结构体
+type ListRemoveResponse struct {
 	UserID    uint   `json:"user_id"`    // 要删除的用户的ID
 	IsSuccess bool   `json:"is_success"` // 是否删除成功
 	Msg       string `json:"msg"`        // 返回信息，如果上传失败则这个字段会返回错误信息

@@ -24,15 +24,15 @@ type User struct {
 	DeletedAt gorm.DeletedAt `gorm:"index" json:"deleted_at"`               // 软删除字段
 }
 
-func SoftDeleteUser(userID uint) (error, UserRemoveResponse) {
+func SoftDeleteUser(userID uint) (error, ListRemoveResponse) {
 	// 根据用户ID查询用户
 	var user User
-	var umRes UserRemoveResponse
+	var umRes ListRemoveResponse
 	result := global.Db.Where("id = ?", userID).First(&user)
 	err := result.Error
 	// 删除失败
 	if err != nil {
-		umRes = UserRemoveResponse{
+		umRes = ListRemoveResponse{
 			UserID:    user.ID,
 			IsSuccess: false,
 			Msg:       fmt.Sprintf("%s", err),
@@ -42,7 +42,7 @@ func SoftDeleteUser(userID uint) (error, UserRemoveResponse) {
 
 	// 检查是否是管理员
 	if user.UserType == 1 {
-		umRes = UserRemoveResponse{
+		umRes = ListRemoveResponse{
 			UserID:    user.ID,
 			IsSuccess: false,
 			Msg:       "管理员不允许删除",
@@ -54,7 +54,7 @@ func SoftDeleteUser(userID uint) (error, UserRemoveResponse) {
 	result = global.Db.Delete(&user)
 	err = result.Error
 	if err != nil {
-		umRes = UserRemoveResponse{
+		umRes = ListRemoveResponse{
 			UserID:    user.ID,
 			IsSuccess: false,
 			Msg:       fmt.Sprintf("%s", err),
@@ -62,7 +62,7 @@ func SoftDeleteUser(userID uint) (error, UserRemoveResponse) {
 		return result.Error, umRes
 	}
 
-	umRes = UserRemoveResponse{
+	umRes = ListRemoveResponse{
 		UserID:    user.ID,
 		IsSuccess: true,
 		Msg:       fmt.Sprintf("删除用户 %d 成功!", user.ID),
