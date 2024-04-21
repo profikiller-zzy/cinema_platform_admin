@@ -83,7 +83,7 @@
         base-url="/api/users"
         ref="adminTable"
         like-title="搜索用户名"
-        is-delete is-add>
+        is-delete is-add is-edit>
       <template #add>
         <a-button type="primary" @click="data.AddModalVisible = true">添加</a-button>
       </template>

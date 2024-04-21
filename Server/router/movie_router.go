@@ -11,4 +11,5 @@ func (r RGroup) MoiveRouter() {
 	r.GET("/movies/", middleware.JwtAuth(1), movieApiApp.MovieListView)
 	r.DELETE("/movies/", middleware.JwtAuth(1), movieApiApp.MovieRemoveView)
 	r.PUT("/movies/", middleware.JwtAuth(1), movieApiApp.MovieEditView)
+	r.POST("/movie_cover/", middleware.JwtAuth(1), movieApiApp.MovieCoverUpload)
 }
