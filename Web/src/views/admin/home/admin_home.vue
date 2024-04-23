@@ -24,13 +24,21 @@ const iconList = reactive([
   "icon-pingluntongji"
 ]);
 
+const dataState = {
+  box_office_day: 0,
+  box_office_week: 0,
+  box_office_month: 0,
+  total_users: 0,
+  total_orders: 0
+}
+
 const data = reactive({
   data_preview_list: [
-    {label: "今日销售额", value: 21},
-    {label: "今日售票数量", value: 21},
-    {label: "今日场次数量", value: 21},
+    {label: "本日票房统计", value: 21},
+    {label: "本周票房统计", value: 21},
+    {label: "本月票房统计", value: 21},
     {label: "用户总数", value: 21},
-    {label: "评论总数", value: 21}
+    {label: "订单总数", value: 21}
   ]
 });
 </script>
