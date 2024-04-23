@@ -40,20 +40,20 @@ const selectedKeys = ref(['1'])
 const data = reactive({
   menuList:[
     {
-      id: "1",
+      id: 1,
       icon: "iconfont icon-home", // 图标名称
       title: "管理员首页",          // 菜单标题
       name: "admin_home",               // 要跳转的路由的名称
       children: []
     },
     {
-      id: "2",
+      id: 2,
       icon: "iconfont icon-yonghuguanli", // 图标名称
       title: "用户管理",          // 菜单标题
       name: "",                  // 用户管理不会跳转路由，所以这里直接为空
       children: [
         {
-          id: "3",
+          id: 3,
           icon: "iconfont icon-yonghuliebiao",
           title: "用户列表",
           name: "user_list",
@@ -61,16 +61,30 @@ const data = reactive({
       ]
     },
     {
-      id: "4",
+      id: 4,
       icon: "iconfont icon-dianyingziyuan", // 图标名称
       title: "电影管理",          // 菜单标题
       name: "",                  // 用户管理不会跳转路由，所以这里直接为空
       children: [
         {
-          id: "5",
+          id: 5,
           icon: "iconfont icon-liebiao",
           title: "电影列表",
           name: "movie_list",
+        },
+      ]
+    },
+    {
+      id: 6,
+      icon: "iconfont icon-yingyuanguanli", // 图标名称
+      title: "影院管理",          // 菜单标题
+      name: "",                  // 用户管理不会跳转路由，所以这里直接为空
+      children: [
+        {
+          id: 7,
+          icon: "iconfont icon-liebiao",
+          title: "影院审批资料列表",
+          name: "cinema_list",
         },
       ]
     },

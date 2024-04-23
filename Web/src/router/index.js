@@ -33,6 +33,11 @@ const router = createRouter({
                         name :"movie_list",
                         component : ()=>import("@/views/admin/movie_management/movie_list.vue")
                     },
+                    {
+                        path :"cinema_list",
+                        name :"cinema_list",
+                        component : ()=>import("@/views/admin/cinema_management/cinema_list.vue")
+                    },
                 ]
             }
         ]

@@ -58,7 +58,6 @@
         </a-form-item>
       </a-form>
     </a-modal>
-
     <a-modal v-model:visible="data.EditModalVisible" title="编辑电影" @ok="EditMovie">
       <a-form
         :model="EditFormState"

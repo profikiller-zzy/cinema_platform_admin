@@ -38,7 +38,6 @@
 <script setup>
 import Admin_aside from "@/components/admin/admin_aside.vue";
 import Admin_info from "@/components/admin/admin_info.vue";
-
 </script>
 
 <style lang="scss">
