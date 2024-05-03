@@ -99,7 +99,7 @@
         base-url="/api/movies"
         ref="adminTable"
         like-title="搜索电影名称"
-        is-delete is-add is-edit>
+        is-add is-edit>
       <template #add>
         <a-button type="primary" @click="data.AddModalVisible = true">添加电影</a-button>
       </template>

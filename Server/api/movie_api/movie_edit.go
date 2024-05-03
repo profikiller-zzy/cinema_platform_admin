@@ -35,7 +35,13 @@ func (MovieApi) MovieEditView(c *gin.Context) {
 		return
 	}
 
-	err = global.Db.Model(&movieModel).Updates(map[string]interface{}{}).Error
+	err = global.Db.Model(&movieModel).Updates(map[string]interface{}{
+		"MovieName":   meReq.MovieName,
+		"ReleaseDate": meReq.ReleaseDate,
+		"PlayTime":    meReq.PlayTime,
+		"Director":    meReq.Director,
+		"Actors":      meReq.Actors,
+	}).Error
 	if err != nil {
 		global.Log.Error(err.Error())
 		response.FailWithMessage(err.Error(), c)

@@ -69,3 +69,12 @@ func SoftDeleteUser(userID uint) (error, ListRemoveResponse) {
 	}
 	return nil, umRes
 }
+
+func CountUsers(db *gorm.DB) (int64, error) {
+	var count int64
+	result := db.Model(&User{}).Count(&count)
+	if result.Error != nil {
+		return 0, result.Error
+	}
+	return count, nil
+}

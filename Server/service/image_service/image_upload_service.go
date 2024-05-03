@@ -43,8 +43,9 @@ func (ImageService) ImageUploadService(FileHeader *multipart.FileHeader, c *gin.
 	}
 
 	// 判断文件大小是否大于指定最大文件大小，大于则直接判断下一个文件
-	if FileHeader.Size > (size << 20) {
-		req = GenerateFileUploadReq(0, fileName, false, fmt.Sprintf("上传图片大小大于设定大小，设定大小为 %d MB，当前图片大小为 %.3f MB", size, float64(FileHeader.Size)/(2<<20)))
+	fileSize := float64(FileHeader.Size) / float64(1024*1024)
+	if fileSize > float64(size) {
+		req = GenerateFileUploadReq(0, fileName, false, fmt.Sprintf("上传图片大小大于设定大小，设定大小为 %.3f MB，当前图片大小为 %.3f MB", float64(size), fileSize))
 		return req
 	}
 

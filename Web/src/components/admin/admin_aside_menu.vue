@@ -44,7 +44,20 @@ const data = reactive({
       icon: "iconfont icon-home", // 图标名称
       title: "管理员首页",          // 菜单标题
       name: "admin_home",               // 要跳转的路由的名称
-      children: []
+      children: [
+        {
+          id: 8,
+          icon: "iconfont icon-TOP",
+          title: "电影票房排行榜",
+          name: "box_office_ranking",
+        },
+        {
+          id: 9,
+          icon: "iconfont icon-TOP",
+          title: "影院票房排行榜",
+          name: "cinema_box_office_ranking",
+        }
+      ]
     },
     {
       id: 2,
@@ -83,7 +96,7 @@ const data = reactive({
         {
           id: 7,
           icon: "iconfont icon-liebiao",
-          title: "影院审批资料列表",
+          title: "影院列表",
           name: "cinema_list",
         },
       ]

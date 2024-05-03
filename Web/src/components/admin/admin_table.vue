@@ -158,7 +158,6 @@ function pageChange() {
   getDataList(page)
 }
 
-// 删除单个用户
 async function batchRemove() {
   try {
     let res = await baseRemoveApi(props.baseUrl, data.selectedRowKeys);

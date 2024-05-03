@@ -38,6 +38,16 @@ const router = createRouter({
                         name :"cinema_list",
                         component : ()=>import("@/views/admin/cinema_management/cinema_list.vue")
                     },
+                    {
+                        path :"box_office_ranking",
+                        name :"box_office_ranking",
+                        component : ()=>import("@/views/admin/office_ranking/box_office_ranking.vue")
+                    },
+                    {
+                        path :"cinema_box_office_ranking",
+                        name :"cinema_box_office_ranking",
+                        component : ()=>import("@/views/admin/office_ranking/cinema_box_office_ranking.vue")
+                    },
                 ]
             }
         ]

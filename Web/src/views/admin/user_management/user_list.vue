@@ -87,6 +87,7 @@
       <template #add>
         <a-button type="primary" @click="data.AddModalVisible = true">添加</a-button>
       </template>
+
       <template #edit="{record}">
         <a-button class="user_action update" @click="EditModel(record)" type="primary">编辑</a-button>
       </template>
@@ -222,7 +223,6 @@ async function AddUser() {
     }
     message.success(res.msg)
     data.AddModalVisible = false
-    // await getUserList()
     // 置空
     Object.assign(formState, _formState)
     // // 清除验证规则

@@ -16,11 +16,12 @@ func InitGorm() *gorm.DB {
 	}
 	dsn := global.Config.Mysql.Dsn()
 	// 设置mysql日志
-	if global.Config.System.Env == "debug" {
-		global.MysqlLog = logger.Default.LogMode(logger.Info) // 输出所有sql语句
-	} else {
-		global.MysqlLog = logger.Default.LogMode(logger.Error) // 只打印产生错误的sql
-	}
+	global.MysqlLog = logger.Default.LogMode(logger.Info) // 输出所有sql语句
+	//if global.Config.System.Env == "debug" {
+	//	global.MysqlLog = logger.Default.LogMode(logger.Info) // 输出所有sql语句
+	//} else {
+	//	global.MysqlLog = logger.Default.LogMode(logger.Error) // 只打印产生错误的sql
+	//}
 
 	db, err := gorm.Open(mysql.Open(dsn))
 	if err != nil {

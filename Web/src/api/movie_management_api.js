@@ -12,7 +12,12 @@ export function movieCreateApi(data) {
     return Service.post("/api/movies", data)
 }
 
-// 编辑用户
+// 编辑电影
 export function movieEditApi(data) {
     return Service.put("/api/movies", data)
+}
+
+// 获取电影票房排行榜
+export function movieRankApi() {
+    return Service.get("/api/movies_rank")
 }
