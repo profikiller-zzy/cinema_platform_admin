@@ -10,6 +10,7 @@ func (r RGroup) MoiveRouter() {
 	r.POST("/movies/", middleware.JwtAuth(1), movieApiApp.MovieCreateView)
 	r.GET("/movies/", middleware.JwtAuth(1), movieApiApp.MovieListView)
 	r.GET("/movies_rank/", middleware.JwtAuth(1), movieApiApp.MovieBoxOfficeRanking)
+	r.POST("/movie_box_office/", middleware.JwtAuth(1), movieApiApp.BoxOfficeOfMovieInSpecificTimePeriod)
 	r.DELETE("/movies/", middleware.JwtAuth(1), movieApiApp.MovieRemoveView)
 	r.PUT("/movies/", middleware.JwtAuth(1), movieApiApp.MovieEditView)
 	r.POST("/movie_cover/", middleware.JwtAuth(1), movieApiApp.MovieCoverUpload)

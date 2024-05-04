@@ -214,7 +214,6 @@ function EditModel(record) {
   EditFormState.play_time = durationTransition(record.play_time)
   EditFormState.director = record.director
   EditFormState.actors = record.actors
-  console.log(EditFormState)
 }
 
 // 编辑电影

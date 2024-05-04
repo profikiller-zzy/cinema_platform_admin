@@ -109,6 +109,10 @@ const props = defineProps({
     type: Boolean,
     default: false
   },
+  isBoxOffice: {
+    type: Boolean,
+    default: false
+  },
   isDelete: {
     type: Boolean,
     default: false
@@ -280,6 +284,10 @@ defineExpose({
     }
 
     .user_action.update {
+      margin-right: 10px;
+    }
+
+    .user_action.boxOffice {
       margin-right: 10px;
     }
   }

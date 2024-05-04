@@ -48,6 +48,11 @@ const router = createRouter({
                         name :"cinema_box_office_ranking",
                         component : ()=>import("@/views/admin/office_ranking/cinema_box_office_ranking.vue")
                     },
+                    {
+                        path :"movie_box_office",
+                        name :"movie_box_office",
+                        component : ()=>import("@/views/admin/movie_management/movie_box_office.vue")
+                    },
                 ]
             }
         ]

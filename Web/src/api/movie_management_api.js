@@ -21,3 +21,8 @@ export function movieEditApi(data) {
 export function movieRankApi() {
     return Service.get("/api/movies_rank")
 }
+
+// 获取电影票房
+export function movieBoxOfficeApi(data) {
+    return Service.post("/api/movie_box_office", data)
+}

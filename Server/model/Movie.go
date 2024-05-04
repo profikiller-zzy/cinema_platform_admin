@@ -112,21 +112,29 @@ func BoxOfficeOfMovieInRecentWeek(movieID uint, db *gorm.DB, startTime time.Time
 	return totalBoxOffice, nil
 }
 
-// BoxOfficeOfMovieInSpecificTimePeriod 根据电影ID，查询出该电影特定时间范围内的总票房
-func BoxOfficeOfMovieInSpecificTimePeriod(movieID uint, db *gorm.DB, startTime time.Time, endTime time.Time) (float64, error) {
-	// 查询复合条件的所有排片信息
-	var screenings []Screening
-	if err := db.Where("DATE(start_time) BETWEEN ? AND ?", startTime.Format("2006-01-02"), endTime.Format("2006-01-02")).
-		Where("movie_id = ?", movieID).Preload("Orders").Find(&screenings).Error; err != nil {
+// BoxOfficeOfMovieInSpecificDay 查询指定电影特定某天的票房
+func BoxOfficeOfMovieInSpecificDay(movieID uint, db *gorm.DB, date string) (float64, error) {
+	var totalBoxOffice float64
+
+	// 查询特定日期的订单并计算票房
+	err := db.Model(&Order{}).
+		Joins("JOIN screenings ON orders.screening_id = screenings.id").
+		Where("screenings.movie_id = ? AND DATE(screenings.start_time) = ?", movieID, date).
+		Select("COALESCE(SUM(orders.ticket_price), 0)").
+		Scan(&totalBoxOffice).Error
+	if err != nil {
 		return 0, err
 	}
 
-	var totalBoxOffice float64
-	// 计算票房
-	for _, screening := range screenings {
-		for _, order := range screening.Orders {
-			totalBoxOffice += order.TicketPrice
-		}
-	}
 	return totalBoxOffice, nil
+}
+
+func GetMovieNameByID(movieID uint, db *gorm.DB) (string, error) {
+	// 查询电影的ID和名称
+	var movie Movie
+	err := db.Take(&movie, "id = ?", movieID).Error
+	if err != nil {
+		return "", err
+	}
+	return movie.MovieName, nil
 }
